@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"compress/zlib"
 	"io/ioutil"
+	"strings"
 )
 
 func main() {
@@ -28,4 +29,8 @@ func ReadObject(filename string) (string, error) {
 	content := buf.String()
 
 	return content, nil
+}
+
+func ParseObject(content string) (string, string) {
+	return content[0:strings.Index(content, " ")], content[strings.Index(content, "\000")+1 : len(content)]
 }

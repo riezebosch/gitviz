@@ -14,3 +14,16 @@ func TestMain(t *testing.T) {
 		t.Fail()
 	}
 }
+
+func TestParseObject(t *testing.T) {
+	input := "commit 252\000tree 8709fadf421ff79bea117e1195277253074d9bc8\nparent 26faf771e5f7c50d00a03b47e71b8df52ff8a7a7\nauthor Manuel Riezebosch <mriezebosch@gmail.com> 1555269442 +0200\ncommitter Manuel Riezebosch <mriezebosch@gmail.com> 1555269442 +0200\n\nread commit from test\n"
+	objectType, content := ParseObject(input)
+
+	if objectType != "commit" {
+		t.Error(objectType)
+	}
+
+	if content != "tree 8709fadf421ff79bea117e1195277253074d9bc8\nparent 26faf771e5f7c50d00a03b47e71b8df52ff8a7a7\nauthor Manuel Riezebosch <mriezebosch@gmail.com> 1555269442 +0200\ncommitter Manuel Riezebosch <mriezebosch@gmail.com> 1555269442 +0200\n\nread commit from test\n" {
+		t.Error(content)
+	}
+}
