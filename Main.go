@@ -31,6 +31,28 @@ func ReadObject(filename string) (string, error) {
 	return content, nil
 }
 
-func ParseObject(content string) (string, string) {
-	return content[0:strings.Index(content, " ")], content[strings.Index(content, "\000")+1 : len(content)]
+func SplitTypeFromContent(content string) (string, string) {
+	split := strings.SplitN(content, "\000", 2)
+	return strings.SplitN(split[0], " ", 2)[0], split[1]
+}
+
+func SplitRefFromContent(content string) (string, string) {
+	var line = strings.SplitN(content, "\n", 2)
+	if strings.HasPrefix(line[0], "tree") ||
+		strings.HasPrefix(line[0], "parent") {
+		return line[0], line[1]
+	}
+
+	return "", content
+}
+
+func CommitReferences(content string) []string {
+	var edges []string
+	var ref, remainder = SplitRefFromContent(content)
+	for ref != "" {
+		edges = append(edges, strings.SplitN(ref, " ", 2)[1])
+		ref, remainder = SplitRefFromContent(remainder)
+	}
+
+	return edges
 }
