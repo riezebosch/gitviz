@@ -1,78 +1,68 @@
 package main
 
 import (
+	"encoding/hex"
+	"fmt"
 	"testing"
+
+	"github.com/git-lfs/gitobj"
 )
 
-func TestMain(t *testing.T) {
-	content, err := ReadObject(".git/objects/ae/710a6ef6cd3145a5366d1ed2b2d918d529e88a")
+func Test(t *testing.T) {
+	repo, err := gitobj.FromFilesystem(".git/objects", "")
+	if err != nil {
+		panic(err)
+	}
+	defer repo.Close()
+
+	sha, _ := hex.DecodeString("4e84516b47b89c12f2f9bf41f34725ef6ddce099")
+
+	object, err := repo.Object(sha)
 	if err != nil {
 		t.Error(err)
 	}
 
-	if content != "commit 252\000tree 8709fadf421ff79bea117e1195277253074d9bc8\nparent 26faf771e5f7c50d00a03b47e71b8df52ff8a7a7\nauthor Manuel Riezebosch <mriezebosch@gmail.com> 1555269442 +0200\ncommitter Manuel Riezebosch <mriezebosch@gmail.com> 1555269442 +0200\n\nread commit from test\n" {
-		t.Fail()
+	switch v := object.(type) {
+	case *gitobj.Tree:
+		var entry = v.Entries[0]
+		if entry.Name != "Main.go" {
+			t.Error(entry)
+		}
+
+		fmt.Printf("%x", entry.Oid)
 	}
 }
 
-func TestSplitTypeFromContent(t *testing.T) {
-	input := "commit 252\000tree 8709fadf421ff79bea117e1195277253074d9bc8\nparent 26faf771e5f7c50d00a03b47e71b8df52ff8a7a7\nauthor Manuel Riezebosch <mriezebosch@gmail.com> 1555269442 +0200\ncommitter Manuel Riezebosch <mriezebosch@gmail.com> 1555269442 +0200\n\nread commit from test\n"
-	objectType, content := SplitTypeFromContent(input)
-
-	if objectType != "commit" {
-		t.Error(objectType)
+func TestAddEdgesFromTree(t *testing.T) {
+	repo, err := gitobj.FromFilesystem(".git/objects", "")
+	if err != nil {
+		t.Error(err)
 	}
+	defer repo.Close()
 
-	if content != "tree 8709fadf421ff79bea117e1195277253074d9bc8\nparent 26faf771e5f7c50d00a03b47e71b8df52ff8a7a7\nauthor Manuel Riezebosch <mriezebosch@gmail.com> 1555269442 +0200\ncommitter Manuel Riezebosch <mriezebosch@gmail.com> 1555269442 +0200\n\nread commit from test\n" {
-		t.Error(content)
-	}
-}
+	id := "4e84516b47b89c12f2f9bf41f34725ef6ddce099"
+	sha, _ := hex.DecodeString(id)
 
-func TestCommitReferences(t *testing.T) {
-	edges := CommitReferences("tree 8709fadf421ff79bea117e1195277253074d9bc8\nparent 26faf771e5f7c50d00a03b47e71b8df52ff8a7a7\nauthor Manuel Riezebosch <mriezebosch@gmail.com> 1555269442 +0200\ncommitter Manuel Riezebosch <mriezebosch@gmail.com> 1555269442 +0200\n\nread commit from test\n")
-
-	if len(edges) != 2 {
-		t.Error(edges)
-	}
-
-	if edges[0] != "8709fadf421ff79bea117e1195277253074d9bc8" {
-		t.Error(edges[0])
-	}
-
-	if edges[1] != "26faf771e5f7c50d00a03b47e71b8df52ff8a7a7" {
-		t.Error(edges[1])
+	tree, _ := repo.Tree(sha)
+	edges := AddEdgesFromTree(id, tree)
+	if edges[0].to != "eea118847928ac06875446004228e11658bcb789" {
+		t.Error(edges[0].to)
 	}
 }
 
-func TestSplitTreeFromContent(t *testing.T) {
-	ref, content := SplitRefFromContent("tree 8709fadf421ff79bea117e1195277253074d9bc8\nparent 26faf771e5f7c50d00a03b47e71b8df52ff8a7a7\nauthor Manuel Riezebosch <mriezebosch@gmail.com> 1555269442 +0200\ncommitter Manuel Riezebosch <mriezebosch@gmail.com> 1555269442 +0200\n\nread commit from test\n")
-	if ref != "tree 8709fadf421ff79bea117e1195277253074d9bc8" {
-		t.Error(ref)
+func TestAddEdgesFromCommit(t *testing.T) {
+	repo, err := gitobj.FromFilesystem(".git/objects", "")
+	if err != nil {
+		t.Error(err)
 	}
+	defer repo.Close()
 
-	if content != "parent 26faf771e5f7c50d00a03b47e71b8df52ff8a7a7\nauthor Manuel Riezebosch <mriezebosch@gmail.com> 1555269442 +0200\ncommitter Manuel Riezebosch <mriezebosch@gmail.com> 1555269442 +0200\n\nread commit from test\n" {
-		t.Error(content)
-	}
-}
+	id := "9754373abed581d1f4d714a6094f025d8e6cab6f"
+	sha, _ := hex.DecodeString(id)
 
-func TestSplitParentFromContent(t *testing.T) {
-	ref, content := SplitRefFromContent("parent 26faf771e5f7c50d00a03b47e71b8df52ff8a7a7\nauthor Manuel Riezebosch <mriezebosch@gmail.com> 1555269442 +0200\ncommitter Manuel Riezebosch <mriezebosch@gmail.com> 1555269442 +0200\n\nread commit from test\n")
-	if ref != "parent 26faf771e5f7c50d00a03b47e71b8df52ff8a7a7" {
-		t.Error(ref)
-	}
-
-	if content != "author Manuel Riezebosch <mriezebosch@gmail.com> 1555269442 +0200\ncommitter Manuel Riezebosch <mriezebosch@gmail.com> 1555269442 +0200\n\nread commit from test\n" {
-		t.Error(content)
-	}
-}
-
-func TestSplitContentFromContent(t *testing.T) {
-	ref, content := SplitRefFromContent("author Manuel Riezebosch <mriezebosch@gmail.com> 1555269442 +0200\ncommitter Manuel Riezebosch <mriezebosch@gmail.com> 1555269442 +0200\n\nread commit from test\n")
-	if ref != "" {
-		t.Error(ref)
-	}
-
-	if content != "author Manuel Riezebosch <mriezebosch@gmail.com> 1555269442 +0200\ncommitter Manuel Riezebosch <mriezebosch@gmail.com> 1555269442 +0200\n\nread commit from test\n" {
-		t.Error(content)
+	tree, _ := repo.Commit(sha)
+	edges := AddEdgesFromCommit(id, tree)
+	if edges[0].to != "4e84516b47b89c12f2f9bf41f34725ef6ddce099" {
+		t.Error(edges[0].to)
 	}
 }

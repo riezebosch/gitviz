@@ -1,58 +1,28 @@
 package main
 
 import (
-	"bytes"
-	"compress/zlib"
-	"io/ioutil"
-	"strings"
+	"encoding/hex"
+
+	"github.com/git-lfs/gitobj"
 )
 
 func main() {
 }
 
-func ReadObject(filename string) (string, error) {
-	dat, err := ioutil.ReadFile(filename)
-	if err != nil {
-		return "", err
-	}
-
-	b := bytes.NewReader(dat)
-	r, err := zlib.NewReader(b)
-	if err != nil {
-		return "", err
-	}
-
-	buf := new(bytes.Buffer)
-	buf.ReadFrom(r)
-
-	r.Close()
-	content := buf.String()
-
-	return content, nil
+type Edge struct {
+	from string
+	to   string
 }
 
-func SplitTypeFromContent(content string) (string, string) {
-	split := strings.SplitN(content, "\000", 2)
-	return strings.SplitN(split[0], " ", 2)[0], split[1]
-}
-
-func SplitRefFromContent(content string) (string, string) {
-	var line = strings.SplitN(content, "\n", 2)
-	if strings.HasPrefix(line[0], "tree") ||
-		strings.HasPrefix(line[0], "parent") {
-		return line[0], line[1]
+func AddEdgesFromTree(id string, tree *gitobj.Tree) (edges []Edge) {
+	for _, entry := range tree.Entries {
+		edges = append(edges, Edge{from: id, to: hex.EncodeToString(entry.Oid)})
 	}
 
-	return "", content
+	return
 }
 
-func CommitReferences(content string) []string {
-	var edges []string
-	var ref, remainder = SplitRefFromContent(content)
-	for ref != "" {
-		edges = append(edges, strings.SplitN(ref, " ", 2)[1])
-		ref, remainder = SplitRefFromContent(remainder)
-	}
-
-	return edges
+func AddEdgesFromCommit(id string, commit *gitobj.Commit) (edges []Edge) {
+	edges = append(edges, Edge{from: id, to: hex.EncodeToString(commit.TreeID)})
+	return
 }
