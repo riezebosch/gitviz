@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/git-lfs/gitobj"
+	"github.com/stretchr/testify/assert"
 )
 
 func Test(t *testing.T) {
@@ -29,7 +30,7 @@ func Test(t *testing.T) {
 			t.Error(entry)
 		}
 
-		fmt.Printf("%x", entry.Oid)
+		fmt.Printf("%x\n", entry.Oid)
 	}
 }
 
@@ -65,4 +66,9 @@ func TestAddEdgesFromCommit(t *testing.T) {
 	if edges[0].to != "4e84516b47b89c12f2f9bf41f34725ef6ddce099" {
 		t.Error(edges[0].to)
 	}
+}
+
+func TestFilewalk(t *testing.T) {
+	nodes := WalkObjects()
+	assert.Contains(t, nodes, "c568e498a51aa3a792956fc3e23d9b239631fbcd")
 }
