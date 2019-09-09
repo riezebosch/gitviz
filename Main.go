@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/hex"
-	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -18,7 +17,7 @@ type Edge struct {
 	To   string `json:"to"`
 }
 
-func AddEdgesFromTree(id string, tree *gitobj.Tree) (edges []Edge) {
+func addEdgesFromTree(id string, tree *gitobj.Tree) (edges []Edge) {
 	for _, entry := range tree.Entries {
 		edges = append(edges, Edge{From: id, To: hex.EncodeToString(entry.Oid)})
 	}
@@ -26,12 +25,16 @@ func AddEdgesFromTree(id string, tree *gitobj.Tree) (edges []Edge) {
 	return
 }
 
-func AddEdgesFromCommit(id string, commit *gitobj.Commit) (edges []Edge) {
+func addEdgesFromCommit(id string, commit *gitobj.Commit) (edges []Edge) {
 	edges = append(edges, Edge{From: id, To: hex.EncodeToString(commit.TreeID)})
+	for _, parent := range commit.ParentIDs {
+		edges = append(edges, Edge{From: id, To: hex.EncodeToString(parent)})
+	}
+
 	return
 }
 
-func WalkObjects() (nodes []string) {
+func walkObjects() (nodes []string) {
 	var dir = ""
 	filepath.Walk(".git/objects", func(path string, info os.FileInfo, err error) error {
 		if !info.IsDir() {
@@ -55,22 +58,37 @@ type Node struct {
 	Id   string `json:"id"`
 }
 
-func ObjectToNode(repo *gitobj.ObjectDatabase, id string) (Node, error) {
+func visitObjects(objects []string) (nodes []Node, edges []Edge) {
+	repo, _ := gitobj.FromFilesystem(".git/objects", "")
+	defer repo.Close()
+
+	for _, id := range objects {
+		node, e, _ := visitObject(repo, id)
+		nodes = append(nodes, node)
+		edges = append(edges, e...)
+	}
+
+	return
+}
+
+func visitObject(repo *gitobj.ObjectDatabase, id string) (node Node, edges []Edge, err error) {
 	sha, _ := hex.DecodeString(id)
 
 	object, err := repo.Object(sha)
 	if err != nil {
-		return Node{}, err
+		return Node{}, edges, err
 	}
 
-	switch object.(type) {
+	switch v := object.(type) {
 	case *gitobj.Tree:
-		return Node{Type: "tree", Id: id}, nil
+		edges = append(addEdgesFromTree(id, v))
+		return Node{Type: "tree", Id: id}, edges, nil
 	case *gitobj.Commit:
-		return Node{Type: "commit", Id: id}, nil
+		edges = append(addEdgesFromCommit(id, v))
+		return Node{Type: "commit", Id: id}, edges, nil
 	case *gitobj.Blob:
-		return Node{Type: "blob", Id: id}, nil
+		return Node{Type: "blob", Id: id}, edges, nil
 	}
 
-	return Node{}, errors.New(fmt.Sprintf("Unkown object type for sha-ish %s", id))
+	return Node{}, edges, fmt.Errorf("Unkown object type for sha-ish %s", id)
 }
