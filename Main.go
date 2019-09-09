@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/hex"
+	"encoding/json"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -10,6 +11,15 @@ import (
 )
 
 func main() {
+	objects := walkObjects()
+	nodes, edges := visitObjects(objects[:])
+	output, _ := json.MarshalIndent(Data{Nodes: nodes, Edges: edges}, "", "   ")
+	fmt.Print(string(output))
+}
+
+type Data struct {
+	Nodes []Node `json:"nodes"`
+	Edges []Edge `json:"edges"`
 }
 
 type Edge struct {
