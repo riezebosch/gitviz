@@ -46,8 +46,8 @@ func TestAddEdgesFromTree(t *testing.T) {
 
 	tree, _ := repo.Tree(sha)
 	edges := AddEdgesFromTree(id, tree)
-	if edges[0].to != "eea118847928ac06875446004228e11658bcb789" {
-		t.Error(edges[0].to)
+	if edges[0].To != "eea118847928ac06875446004228e11658bcb789" {
+		t.Error(edges[0].To)
 	}
 }
 
@@ -63,8 +63,8 @@ func TestAddEdgesFromCommit(t *testing.T) {
 
 	tree, _ := repo.Commit(sha)
 	edges := AddEdgesFromCommit(id, tree)
-	if edges[0].to != "4e84516b47b89c12f2f9bf41f34725ef6ddce099" {
-		t.Error(edges[0].to)
+	if edges[0].To != "4e84516b47b89c12f2f9bf41f34725ef6ddce099" {
+		t.Error(edges[0].To)
 	}
 }
 
