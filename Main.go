@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/hex"
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -13,8 +14,8 @@ func main() {
 }
 
 type Edge struct {
-	From string
-	To   string
+	From string `json:"from"`
+	To   string `json:"to"`
 }
 
 func AddEdgesFromTree(id string, tree *gitobj.Tree) (edges []Edge) {
@@ -47,4 +48,29 @@ func WalkObjects() (nodes []string) {
 	})
 
 	return
+}
+
+type Node struct {
+	Type string `json:"type"`
+	Id   string `json:"id"`
+}
+
+func ObjectToNode(repo *gitobj.ObjectDatabase, id string) (Node, error) {
+	sha, _ := hex.DecodeString(id)
+
+	object, err := repo.Object(sha)
+	if err != nil {
+		return Node{}, err
+	}
+
+	switch object.(type) {
+	case *gitobj.Tree:
+		return Node{Type: "tree", Id: id}, nil
+	case *gitobj.Commit:
+		return Node{Type: "commit", Id: id}, nil
+	case *gitobj.Blob:
+		return Node{Type: "blob", Id: id}, nil
+	}
+
+	return Node{}, errors.New(fmt.Sprintf("Unkown object type for sha-ish %s", id))
 }
