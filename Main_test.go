@@ -1,14 +1,13 @@
 package main
 
 import (
-	"encoding/hex"
 	"testing"
 
 	"github.com/git-lfs/gitobj"
 	"github.com/stretchr/testify/assert"
 )
 
-func TestObjectToNodeTree(t *testing.T) {
+func TestVisitObjectTree(t *testing.T) {
 	repo, _ := gitobj.FromFilesystem(".git/objects", "")
 	defer repo.Close()
 
@@ -17,7 +16,7 @@ func TestObjectToNodeTree(t *testing.T) {
 	assert.Contains(t, edges, Edge{From: "4e84516b47b89c12f2f9bf41f34725ef6ddce099", To: "eea118847928ac06875446004228e11658bcb789"})
 }
 
-func TestObjectToNodeCommit(t *testing.T) {
+func TestVisitObjectCommit(t *testing.T) {
 	repo, _ := gitobj.FromFilesystem(".git/objects", "")
 	defer repo.Close()
 
@@ -27,38 +26,12 @@ func TestObjectToNodeCommit(t *testing.T) {
 	assert.Contains(t, edges, Edge{From: "bb4840c0b5dc29bcb7d4e0e2e5d1b9e9dec721e5", To: "3dda9e9c4e40b7e1b743793075850eadf5817ab5"})
 }
 
-func TestObjectToNodeBlob(t *testing.T) {
+func TestVisitObjectBlob(t *testing.T) {
 	repo, _ := gitobj.FromFilesystem(".git/objects", "")
 	defer repo.Close()
 
 	node, _, _ := visitObject(repo, "eea118847928ac06875446004228e11658bcb789")
 	assert.Equal(t, "blob", node.Type)
-}
-
-func TestAddEdgesFromTree(t *testing.T) {
-	repo, _ := gitobj.FromFilesystem(".git/objects", "")
-	defer repo.Close()
-
-	id := "4e84516b47b89c12f2f9bf41f34725ef6ddce099"
-	sha, _ := hex.DecodeString(id)
-
-	tree, _ := repo.Tree(sha)
-	edges := addEdgesFromTree(id, tree)
-	assert.Contains(t, edges, Edge{From: id, To: "eea118847928ac06875446004228e11658bcb789"})
-}
-
-func TestAddEdgesFromCommit(t *testing.T) {
-	repo, _ := gitobj.FromFilesystem(".git/objects", "")
-	defer repo.Close()
-
-	id := "9754373abed581d1f4d714a6094f025d8e6cab6f"
-	sha, _ := hex.DecodeString(id)
-
-	tree, _ := repo.Commit(sha)
-	edges := addEdgesFromCommit(id, tree)
-	if edges[0].To != "4e84516b47b89c12f2f9bf41f34725ef6ddce099" {
-		t.Error(edges[0].To)
-	}
 }
 
 func TestFilewalk(t *testing.T) {
