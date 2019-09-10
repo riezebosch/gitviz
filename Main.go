@@ -67,7 +67,14 @@ func walkObjects() (nodes []string) {
 }
 
 func visitBranches() (nodes []Node, edges []Edge) {
-	dir := ".git/refs/heads"
+	return visitRef(".git/refs/heads")
+}
+
+func visitTags() (nodes []Node, edges []Edge) {
+	return visitRef(".git/refs/tags")
+}
+
+func visitRef(dir string) (nodes []Node, edges []Edge) {
 	files, _ := ioutil.ReadDir(dir)
 	for _, file := range files {
 		nodes = append(nodes, Node{Id: file.Name(), Type: "branch"})

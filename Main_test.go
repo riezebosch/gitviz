@@ -40,6 +40,12 @@ func TestVisitBranches(t *testing.T) {
 	assert.Contains(t, edges, Edge{From: "for-testing", To: "627c86822eaa47167417c2c7fc99ef42c599711a"})
 }
 
+func TestVisitTags(t *testing.T) {
+	branches, edges := visitTags()
+	assert.Contains(t, branches, Node{Id: "tag-for-testing", Type: "branch"})
+	assert.Contains(t, edges, Edge{From: "tag-for-testing", To: "5e0ddee0751a036f9f51585aa7fb7bde5afe5000"})
+}
+
 func TestFilewalk(t *testing.T) {
 	nodes := walkObjects()
 	assert.Contains(t, nodes, "c568e498a51aa3a792956fc3e23d9b239631fbcd")
