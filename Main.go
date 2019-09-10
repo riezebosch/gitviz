@@ -1,10 +1,13 @@
 package main
 
 import (
+	"bufio"
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"os"
+	"path"
 	"path/filepath"
 
 	"github.com/git-lfs/gitobj"
@@ -61,6 +64,29 @@ func walkObjects() (nodes []string) {
 	})
 
 	return
+}
+
+func visitBranches() (nodes []Node, edges []Edge) {
+	dir := ".git/refs/heads"
+	files, _ := ioutil.ReadDir(dir)
+	for _, file := range files {
+		nodes = append(nodes, Node{Id: file.Name(), Type: "branch"})
+
+		data := readFirstLine(path.Join(dir, file.Name()))
+		edges = append(edges, Edge{From: file.Name(), To: string(data)})
+	}
+
+	return
+}
+
+func readFirstLine(path string) string {
+	file, _ := os.Open(path)
+	defer file.Close()
+
+	scanner := bufio.NewScanner(file)
+	scanner.Scan()
+
+	return scanner.Text()
 }
 
 type Node struct {

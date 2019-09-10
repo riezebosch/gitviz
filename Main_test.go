@@ -34,6 +34,12 @@ func TestVisitObjectBlob(t *testing.T) {
 	assert.Equal(t, "blob", node.Type)
 }
 
+func TestVisitBranches(t *testing.T) {
+	branches, edges := visitBranches()
+	assert.Contains(t, branches, Node{Id: "for-testing", Type: "branch"})
+	assert.Contains(t, edges, Edge{From: "for-testing", To: "627c86822eaa47167417c2c7fc99ef42c599711a"})
+}
+
 func TestFilewalk(t *testing.T) {
 	nodes := walkObjects()
 	assert.Contains(t, nodes, "c568e498a51aa3a792956fc3e23d9b239631fbcd")
