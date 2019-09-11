@@ -1,8 +1,12 @@
 package main
 
 import (
+	"encoding/hex"
+	"fmt"
+	"io/ioutil"
 	"testing"
 
+	"github.com/git-lfs/gitobj"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -45,4 +49,15 @@ func TestVisitAll(t *testing.T) {
 func TestFilewalk(t *testing.T) {
 	nodes := walkObjects()
 	assert.Contains(t, nodes, "c568e498a51aa3a792956fc3e23d9b239631fbcd")
+}
+
+func TestContent(t *testing.T) {
+	repo, _ := gitobj.FromFilesystem(".git/objects", "")
+
+	id := "eea118847928ac06875446004228e11658bcb789"
+	sha, _ := hex.DecodeString(id)
+	blob, _ := repo.Blob(sha)
+
+	content, _ := ioutil.ReadAll(blob.Contents)
+	fmt.Print(string(content))
 }
