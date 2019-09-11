@@ -14,10 +14,17 @@ import (
 )
 
 func main() {
-	objects := walkObjects()
-	nodes, edges := visitObjects(objects[:])
+	nodes, edges := visitAll()
 	output, _ := json.MarshalIndent(Data{Nodes: nodes, Edges: edges}, "", "   ")
 	fmt.Print(string(output))
+}
+
+func visitAll() (nodes []Node, edges []Edge) {
+	nodes, edges = visitObjects(nodes, edges)
+	nodes, edges = visitBranches(nodes, edges)
+	nodes, edges = visitTags(nodes, edges)
+
+	return
 }
 
 type Data struct {
@@ -66,15 +73,15 @@ func walkObjects() (nodes []string) {
 	return
 }
 
-func visitBranches() (nodes []Node, edges []Edge) {
-	return visitRef(".git/refs/heads")
+func visitBranches(nodes []Node, edges []Edge) ([]Node, []Edge) {
+	return visitRef(".git/refs/heads", nodes, edges)
 }
 
-func visitTags() (nodes []Node, edges []Edge) {
-	return visitRef(".git/refs/tags")
+func visitTags(nodes []Node, edges []Edge) ([]Node, []Edge) {
+	return visitRef(".git/refs/tags", nodes, edges)
 }
 
-func visitRef(dir string) (nodes []Node, edges []Edge) {
+func visitRef(dir string, nodes []Node, edges []Edge) ([]Node, []Edge) {
 	files, _ := ioutil.ReadDir(dir)
 	for _, file := range files {
 		nodes = append(nodes, Node{Id: file.Name(), Type: "branch"})
@@ -83,7 +90,7 @@ func visitRef(dir string) (nodes []Node, edges []Edge) {
 		edges = append(edges, Edge{From: file.Name(), To: string(data)})
 	}
 
-	return
+	return nodes, edges
 }
 
 func readFirstLine(path string) string {
@@ -101,17 +108,18 @@ type Node struct {
 	Id   string `json:"id"`
 }
 
-func visitObjects(objects []string) (nodes []Node, edges []Edge) {
+func visitObjects(nodes []Node, edges []Edge) ([]Node, []Edge) {
 	repo, _ := gitobj.FromFilesystem(".git/objects", "")
 	defer repo.Close()
 
+	objects := walkObjects()
 	for _, id := range objects {
 		node, e, _ := visitObject(repo, id)
 		nodes = append(nodes, node)
 		edges = append(edges, e...)
 	}
 
-	return
+	return nodes, edges
 }
 
 func visitObject(repo *gitobj.ObjectDatabase, id string) (node Node, edges []Edge, err error) {
