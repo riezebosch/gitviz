@@ -6,17 +6,34 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"net/http"
 	"os"
 	"path"
 	"path/filepath"
 
+	"github.com/pkg/browser"
+
 	"github.com/git-lfs/gitobj"
+	"github.com/go-chi/chi"
+	"github.com/go-chi/cors"
 )
 
 func main() {
-	nodes, edges := visitAll()
-	output, _ := json.MarshalIndent(Data{Nodes: nodes, Edges: edges}, "", "   ")
-	fmt.Print(string(output))
+	r := chi.NewRouter()
+	cors := cors.New(cors.Options{
+		AllowedOrigins: []string{"http://localhost:3000", "https://riezebosch.github.io"},
+		AllowedMethods: []string{"GET"},
+	})
+	r.Use(cors.Handler)
+
+	r.Get("/v1/graph/", func(w http.ResponseWriter, r *http.Request) {
+		nodes, edges := visitAll()
+		output, _ := json.MarshalIndent(Data{Nodes: nodes, Edges: edges}, "", "   ")
+		w.Write(output)
+	})
+
+	browser.OpenURL("https://riezebosch.github.io/gitgraph")
+	panic(http.ListenAndServe(":3333", r))
 }
 
 func visitAll() (nodes []Node, edges []Edge) {
