@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"strings"
 
 	"github.com/git-lfs/gitobj"
 )
@@ -40,7 +39,17 @@ func addEdgesFromCommit(id string, commit *gitobj.Commit) (edges []Edge) {
 }
 
 func visitRefs(nodes []Node, edges []Edge) ([]Node, []Edge) {
-	files, _ := filepath.Glob(".git/refs/**/*")
+	var files, _ = filepath.Glob(".git/refs/heads/*")
+	for _, file := range files {
+		nodes, edges = visitRef(file, nodes, edges)
+	}
+
+	files, _ = filepath.Glob(".git/refs/remotes/*/*")
+	for _, file := range files {
+		nodes, edges = visitRef(file, nodes, edges)
+	}
+
+	files, _ = filepath.Glob(".git/refs/tags/*")
 	for _, file := range files {
 		nodes, edges = visitRef(file, nodes, edges)
 	}
@@ -52,7 +61,7 @@ func visitRef(path string, nodes []Node, edges []Edge) ([]Node, []Edge) {
 	id := refID(path[5:])
 	nodes = append(nodes, Node{ID: id, Type: "branch"})
 
-	to := readFirstLine(path)
+	to := refID(readFirstLine(path))
 	edges = append(edges, Edge{From: id, To: to})
 
 	return nodes, edges
@@ -105,10 +114,6 @@ func visitObject(repo *gitobj.ObjectDatabase, id string) (node Node, edges []Edg
 }
 
 func visitHead(nodes []Node, edges []Edge) ([]Node, []Edge) {
-	to := readFirstLine(".git/HEAD")
-	if strings.HasPrefix(to, "ref: ") {
-		to = refID(to[5:])
-	}
-
+	to := refID(readFirstLine(".git/HEAD"))
 	return append(nodes, Node{ID: "HEAD", Type: "branch"}), append(edges, Edge{From: "HEAD", To: to})
 }

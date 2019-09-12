@@ -30,6 +30,11 @@ func TestVisitBranches(t *testing.T) {
 	assert.Contains(t, graph.Edges, Edge{From: "for-testing", To: "627c86822eaa47167417c2c7fc99ef42c599711a"})
 }
 
+func TestVisitRemoteTrackingBranches(t *testing.T) {
+	graph := Visit()
+	assert.Contains(t, graph.Nodes, Node{ID: "origin/master", Type: "branch"})
+}
+
 func TestVisitTags(t *testing.T) {
 	graph := Visit()
 	assert.Contains(t, graph.Nodes, Node{ID: "tag-for-testing", Type: "branch"})

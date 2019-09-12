@@ -1,21 +1,27 @@
 package main
 
-import "strings"
+import (
+	"path/filepath"
+	"strings"
+)
 
-func refID(path string) string {
-	if strings.HasPrefix(path, "refs/heads/") {
-		return path[11:]
+func refID(id string) string {
+	id = filepath.ToSlash(id)
+	id = strings.Replace(id, "ref: ", "", 1)
+
+	if strings.HasPrefix(id, "refs/heads/") {
+		return id[11:]
 	}
 
-	if strings.HasPrefix(path, "refs/remotes/") {
-		return path[13:]
+	if strings.HasPrefix(id, "refs/remotes/") {
+		return id[13:]
 	}
 
-	if strings.HasPrefix(path, "refs/tags/") {
-		return path[10:]
+	if strings.HasPrefix(id, "refs/tags/") {
+		return id[10:]
 	}
 
-	return path
+	return id
 }
 
 func objectID(path string) string {
