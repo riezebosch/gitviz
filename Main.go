@@ -2,6 +2,8 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
+	"net"
 	"net/http"
 
 	"github.com/pkg/browser"
@@ -13,7 +15,7 @@ import (
 func main() {
 	r := chi.NewRouter()
 	cors := cors.New(cors.Options{
-		AllowedOrigins: []string{"http://localhost:3000", "https://riezebosch.github.io"},
+		AllowedOrigins: []string{"https://riezebosch.github.io"},
 		AllowedMethods: []string{"GET"},
 	})
 	r.Use(cors.Handler)
@@ -23,6 +25,16 @@ func main() {
 		w.Write(output)
 	})
 
-	browser.OpenURL("https://riezebosch.github.io/gitgraph")
-	panic(http.ListenAndServe(":3333", r))
+	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
+		output, _ := Asset("html/index.html")
+		w.Write(output)
+	})
+
+	listener, err := net.Listen("tcp", ":0")
+	if err != nil {
+		panic(err)
+	}
+
+	browser.OpenURL(fmt.Sprintf("http://localhost:%v", listener.Addr().(*net.TCPAddr).Port))
+	panic(http.Serve(listener, r))
 }
