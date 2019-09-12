@@ -1,0 +1,96 @@
+<!doctype html>
+<html>
+<head>
+  <title>gitviz</title>
+  <script type="text/javascript" src="https://unpkg.com/vis-network@latest/dist/vis-network.min.js"></script>
+  <link href="https://unpkg.com/vis-network@latest/dist/vis-network.min.css" rel="stylesheet" type="text/css" />
+  <style type="text/css">
+    html,body {
+        height: 100%;
+        width: 100%;
+    }
+
+    #mynetwork {
+        height: 100%;
+        width: 100%;
+    }
+  </style>
+</head>
+<body>
+    <div id="mynetwork"></div>
+
+<script type="text/javascript">
+    function toColor(type) {
+        const mapping = new Map([
+            ['blob', 'blue'],
+            ['tree', 'green'],
+            ['commit', 'red'],
+            ['branch', 'grey']
+        ]);
+          
+        return mapping.get(type) || 'pink'
+    }
+
+    function toLabel(x) {
+        const objects = ["blob", "tree", "commit"];
+        return objects.includes(x.type) ? x.id.substr(0, 8) : x.id;
+    }
+    
+    var nodes = new vis.DataSet([]);
+    var edges = new vis.DataSet([]);
+
+    const options = {
+        width: "100%",
+        height: "100%",
+        autoResize: true,
+        physics: {
+            enabled:true,
+            "barnesHut": {
+                "gravitationalConstant": -10000,
+                "centralGravity": 0,
+                "damping": 1,
+                "avoidOverlap": 1,
+                "springLength": 150,
+            },
+            "maxVelocity": 0.5,
+            "minVelocity": 0,
+            "timestep": 1
+        },
+        edges: {
+            smooth: false,
+            color: "#000000",
+            width: 0.5,
+            arrows: {
+                to: {
+                    enabled: true,
+                    scaleFactor: 0.5
+                }
+            }
+        },
+        nodes: {
+            font: {
+                color: "white"
+            }
+        }
+    };
+
+    const container = document.getElementById('mynetwork')
+    const network = new vis.Network(container, { nodes, edges }, options);
+
+    difference = (first, another, compare) => first.filter(a => !another.some(b => compare(a, b)));
+
+    function load() {
+        fetch('/v1/graph/').then(response => response.json()).then(json => {
+            nodes.remove(difference(nodes.get(), json.nodes, (a, b) => a.id === b.id));
+            nodes.add(difference(json.nodes, nodes.get(), (a, b) => a.id === b.id).map(x => ({ id: x.id, label: this.toLabel(x), color: this.toColor(x.type), title: x.id })));
+
+            edges.remove(difference(edges.get(), json.edges, (a, b) => a.from === b.from && a.to === b.to));
+            edges.add(difference(json.edges, edges.get(), (a, b) => a.from === b.from && a.to === b.to));
+        });
+    }
+
+    load();
+    setInterval(load, 3000);
+</script>
+</body>
+</html>
