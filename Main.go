@@ -72,26 +72,6 @@ func addEdgesFromCommit(id string, commit *gitobj.Commit) (edges []Edge) {
 	return
 }
 
-func walkObjects() (nodes []string) {
-	var dir = ""
-	filepath.Walk(".git/objects", func(path string, info os.FileInfo, err error) error {
-		if !info.IsDir() {
-
-			nodes = append(nodes, fmt.Sprintf("%s%s", dir, info.Name()))
-		} else {
-			switch info.Name() {
-			case "info", "pack":
-				return filepath.SkipDir
-			}
-
-			dir = info.Name()
-		}
-		return nil
-	})
-
-	return
-}
-
 func visitRefs(nodes []Node, edges []Edge) ([]Node, []Edge) {
 	filepath.Walk(".git/refs", func(path string, info os.FileInfo, err error) error {
 		if !info.IsDir() {
@@ -129,6 +109,10 @@ func refId(path string) string {
 	return path
 }
 
+func objectId(path string) string {
+	return path[13:15] + path[16:]
+}
+
 func readFirstLine(path string) string {
 	file, _ := os.Open(path)
 	defer file.Close()
@@ -148,9 +132,9 @@ func visitObjects(nodes []Node, edges []Edge) ([]Node, []Edge) {
 	repo, _ := gitobj.FromFilesystem(".git/objects", "")
 	defer repo.Close()
 
-	objects := walkObjects()
-	for _, id := range objects {
-		node, e, _ := visitObject(repo, id)
+	objects, _ := filepath.Glob(".git/objects/??/*")
+	for _, object := range objects {
+		node, e, _ := visitObject(repo, objectId(object))
 		nodes = append(nodes, node)
 		edges = append(edges, e...)
 	}

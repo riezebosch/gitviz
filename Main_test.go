@@ -51,11 +51,6 @@ func TestVisitAll(t *testing.T) {
 	assert.Contains(t, nodes, Node{Id: "tag-for-testing", Type: "branch"})
 }
 
-func TestFilewalk(t *testing.T) {
-	nodes := walkObjects()
-	assert.Contains(t, nodes, "c568e498a51aa3a792956fc3e23d9b239631fbcd")
-}
-
 func TestContent(t *testing.T) {
 	repo, _ := gitobj.FromFilesystem(".git/objects", "")
 
@@ -80,4 +75,9 @@ func TestRefIdRemote(t *testing.T) {
 func TestRefIdTag(t *testing.T) {
 	id := refId("refs/tags/0.1")
 	assert.Equal(t, id, "0.1")
+}
+
+func TestObjectId(t *testing.T) {
+	path := ".git/objects/00/507eabbf76528884df48a1c9fe30434825bf57"
+	assert.Equal(t, "00507eabbf76528884df48a1c9fe30434825bf57", objectId(path))
 }
