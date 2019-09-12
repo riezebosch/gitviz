@@ -5,11 +5,10 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"net/http"
 	"os"
-	"path"
 	"path/filepath"
+	"strings"
 
 	"github.com/pkg/browser"
 
@@ -36,12 +35,13 @@ func main() {
 	panic(http.ListenAndServe(":3333", r))
 }
 
-func visitAll() (nodes []Node, edges []Edge) {
+func visitAll() ([]Node, []Edge) {
+	var nodes = []Node{}
+	var edges = []Edge{}
 	nodes, edges = visitObjects(nodes, edges)
-	nodes, edges = visitBranches(nodes, edges)
-	nodes, edges = visitTags(nodes, edges)
+	nodes, edges = visitRefs(nodes, edges)
 
-	return
+	return nodes, edges
 }
 
 type Data struct {
@@ -75,6 +75,7 @@ func walkObjects() (nodes []string) {
 	var dir = ""
 	filepath.Walk(".git/objects", func(path string, info os.FileInfo, err error) error {
 		if !info.IsDir() {
+
 			nodes = append(nodes, fmt.Sprintf("%s%s", dir, info.Name()))
 		} else {
 			switch info.Name() {
@@ -90,24 +91,41 @@ func walkObjects() (nodes []string) {
 	return
 }
 
-func visitBranches(nodes []Node, edges []Edge) ([]Node, []Edge) {
-	return visitRef(".git/refs/heads", nodes, edges)
-}
-
-func visitTags(nodes []Node, edges []Edge) ([]Node, []Edge) {
-	return visitRef(".git/refs/tags", nodes, edges)
-}
-
-func visitRef(dir string, nodes []Node, edges []Edge) ([]Node, []Edge) {
-	files, _ := ioutil.ReadDir(dir)
-	for _, file := range files {
-		nodes = append(nodes, Node{Id: file.Name(), Type: "branch"})
-
-		data := readFirstLine(path.Join(dir, file.Name()))
-		edges = append(edges, Edge{From: file.Name(), To: string(data)})
-	}
+func visitRefs(nodes []Node, edges []Edge) ([]Node, []Edge) {
+	filepath.Walk(".git/refs", func(path string, info os.FileInfo, err error) error {
+		if !info.IsDir() {
+			nodes, edges = visitRef(path, nodes, edges)
+		}
+		return nil
+	})
 
 	return nodes, edges
+}
+
+func visitRef(path string, nodes []Node, edges []Edge) ([]Node, []Edge) {
+	id := refId(path)
+	nodes = append(nodes, Node{Id: id, Type: "branch"})
+
+	to := readFirstLine(path)
+	edges = append(edges, Edge{From: id, To: to})
+
+	return nodes, edges
+}
+
+func refId(path string) string {
+	if strings.HasPrefix(path, ".git/refs/heads/") {
+		return path[16:]
+	}
+
+	if strings.HasPrefix(path, ".git/refs/remotes/") {
+		return path[18:]
+	}
+
+	if strings.HasPrefix(path, ".git/refs/tags/") {
+		return path[15:]
+	}
+
+	return path
 }
 
 func readFirstLine(path string) string {
@@ -149,10 +167,10 @@ func visitObject(repo *gitobj.ObjectDatabase, id string) (node Node, edges []Edg
 
 	switch v := object.(type) {
 	case *gitobj.Tree:
-		edges = append(addEdgesFromTree(id, v))
+		edges = append(edges, addEdgesFromTree(id, v)...)
 		return Node{Type: "tree", Id: id}, edges, nil
 	case *gitobj.Commit:
-		edges = append(addEdgesFromCommit(id, v))
+		edges = append(edges, addEdgesFromCommit(id, v)...)
 		return Node{Type: "commit", Id: id}, edges, nil
 	case *gitobj.Blob:
 		return Node{Type: "blob", Id: id}, edges, nil

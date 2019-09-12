@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/hex"
-	"fmt"
 	"io/ioutil"
 	"testing"
 
@@ -42,8 +41,8 @@ func TestVisitTags(t *testing.T) {
 
 func TestVisitAll(t *testing.T) {
 	nodes, _ := visitAll()
-	assert.Contains(t, nodes, Node{Id: "tag-for-testing", Type: "branch"})
 	assert.Contains(t, nodes, Node{Id: "for-testing", Type: "branch"})
+	assert.Contains(t, nodes, Node{Id: "tag-for-testing", Type: "branch"})
 }
 
 func TestFilewalk(t *testing.T) {
@@ -59,5 +58,20 @@ func TestContent(t *testing.T) {
 	blob, _ := repo.Blob(sha)
 
 	content, _ := ioutil.ReadAll(blob.Contents)
-	fmt.Print(string(content))
+	assert.Contains(t, string(content), "CommitReferences")
+}
+
+func TestRefId(t *testing.T) {
+	id := refId(".git/refs/heads/master")
+	assert.Equal(t, id, "master")
+}
+
+func TestRefIdRemote(t *testing.T) {
+	id := refId(".git/refs/remotes/origin/master")
+	assert.Equal(t, id, "origin/master")
+}
+
+func TestRefIdTag(t *testing.T) {
+	id := refId(".git/refs/tags/0.1")
+	assert.Equal(t, id, "0.1")
 }
