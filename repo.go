@@ -40,12 +40,10 @@ func addEdgesFromCommit(id string, commit *gitobj.Commit) (edges []Edge) {
 }
 
 func visitRefs(nodes []Node, edges []Edge) ([]Node, []Edge) {
-	filepath.Walk(".git/refs", func(path string, info os.FileInfo, err error) error {
-		if !info.IsDir() {
-			nodes, edges = visitRef(path, nodes, edges)
-		}
-		return nil
-	})
+	files, _ := filepath.Glob(".git/refs/**/*")
+	for _, file := range files {
+		nodes, edges = visitRef(file, nodes, edges)
+	}
 
 	return nodes, edges
 }
