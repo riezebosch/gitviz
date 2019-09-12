@@ -39,6 +39,12 @@ func TestVisitTags(t *testing.T) {
 	assert.Contains(t, edges, Edge{From: "tag-for-testing", To: "5e0ddee0751a036f9f51585aa7fb7bde5afe5000"})
 }
 
+func TestVisitHead(t *testing.T) {
+	nodes, edges := visitAll()
+	assert.Contains(t, nodes, Node{Id: "HEAD", Type: "branch"})
+	assert.Contains(t, edges, Edge{From: "HEAD", To: "master"})
+}
+
 func TestVisitAll(t *testing.T) {
 	nodes, _ := visitAll()
 	assert.Contains(t, nodes, Node{Id: "for-testing", Type: "branch"})
@@ -62,16 +68,16 @@ func TestContent(t *testing.T) {
 }
 
 func TestRefId(t *testing.T) {
-	id := refId(".git/refs/heads/master")
+	id := refId("refs/heads/master")
 	assert.Equal(t, id, "master")
 }
 
 func TestRefIdRemote(t *testing.T) {
-	id := refId(".git/refs/remotes/origin/master")
+	id := refId("refs/remotes/origin/master")
 	assert.Equal(t, id, "origin/master")
 }
 
 func TestRefIdTag(t *testing.T) {
-	id := refId(".git/refs/tags/0.1")
+	id := refId("refs/tags/0.1")
 	assert.Equal(t, id, "0.1")
 }

@@ -40,6 +40,7 @@ func visitAll() ([]Node, []Edge) {
 	var edges = []Edge{}
 	nodes, edges = visitObjects(nodes, edges)
 	nodes, edges = visitRefs(nodes, edges)
+	nodes, edges = visitHead(nodes, edges)
 
 	return nodes, edges
 }
@@ -103,7 +104,7 @@ func visitRefs(nodes []Node, edges []Edge) ([]Node, []Edge) {
 }
 
 func visitRef(path string, nodes []Node, edges []Edge) ([]Node, []Edge) {
-	id := refId(path)
+	id := refId(path[5:])
 	nodes = append(nodes, Node{Id: id, Type: "branch"})
 
 	to := readFirstLine(path)
@@ -113,16 +114,16 @@ func visitRef(path string, nodes []Node, edges []Edge) ([]Node, []Edge) {
 }
 
 func refId(path string) string {
-	if strings.HasPrefix(path, ".git/refs/heads/") {
-		return path[16:]
+	if strings.HasPrefix(path, "refs/heads/") {
+		return path[11:]
 	}
 
-	if strings.HasPrefix(path, ".git/refs/remotes/") {
-		return path[18:]
+	if strings.HasPrefix(path, "refs/remotes/") {
+		return path[13:]
 	}
 
-	if strings.HasPrefix(path, ".git/refs/tags/") {
-		return path[15:]
+	if strings.HasPrefix(path, "refs/tags/") {
+		return path[10:]
 	}
 
 	return path
@@ -177,4 +178,13 @@ func visitObject(repo *gitobj.ObjectDatabase, id string) (node Node, edges []Edg
 	}
 
 	return Node{}, edges, fmt.Errorf("Unkown object type for sha-ish %s", id)
+}
+
+func visitHead(nodes []Node, edges []Edge) ([]Node, []Edge) {
+	to := readFirstLine(".git/HEAD")
+	if strings.HasPrefix(to, "ref: ") {
+		to = refId(to[5:])
+	}
+
+	return append(nodes, Node{Id: "HEAD", Type: "branch"}), append(edges, Edge{From: "HEAD", To: to})
 }
