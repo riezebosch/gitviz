@@ -42,7 +42,9 @@
     <button id="physics" onclick="stop()">STOP</button>
 
     <script type="text/javascript">
-    function toColor(type) {
+    const objects = ["blob", "tree", "commit"];
+
+    toColor = (type) => {
         const mapping = new Map([
             ['blob', 'blue'],
             ['tree', 'green'],
@@ -53,10 +55,7 @@
         return mapping.get(type) || 'pink'
     }
 
-    function toLabel(x) {
-        const objects = ["blob", "tree", "commit"];
-        return objects.includes(x.type) ? x.id.substr(0, 8) : x.id;
-    }
+    toLabel = (x) => objects.includes(x.type) ? x.id.substr(0, 8) : x.id;
     
     var nodes = new vis.DataSet([]);
     var edges = new vis.DataSet([]);
@@ -105,7 +104,9 @@
     network.on('click', (params) => {
         if (params.nodes[0]){
             node = nodes.get(params.nodes[0]);
-            content = fetch(`/v1/objects/${node.type}/${node.id}`).then(response => response.text()).then(content => data.innerText = content);
+            if (objects.includes(node.type)) {
+                fetch(`/api/objects/${node.type}/${node.id}`).then(response => response.text()).then(content => data.innerText = content);
+            }
         } 
         return;
     });
@@ -113,7 +114,7 @@
     difference = (first, another, compare) => first.filter(a => !another.some(b => compare(a, b)));
 
     function load() {
-        fetch('/v1/graph/').then(response => response.json()).then(json => {
+        fetch('/api/graph').then(response => response.json()).then(json => {
             nodes.remove(difference(nodes.get(), json.nodes, (a, b) => a.id === b.id));
             nodes.add(difference(json.nodes, nodes.get(), (a, b) => a.id === b.id).map(x => ({ id: x.id, label: this.toLabel(x), color: this.toColor(x.type), type: x.type, title: x.id })));
 
