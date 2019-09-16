@@ -29,7 +29,7 @@
         color: white;
     }
 
-    #physics {
+    #buttons {
         position: fixed;
         left: 2em;
         top: 2em;
@@ -39,7 +39,10 @@
 <body>
     <div id="mynetwork"></div>
     <pre id="data"></pre>
-    <button id="physics" onclick="stop()">STOP</button>
+    <div id="buttons">
+        <button id="physics" onclick="stop()">STOP</button>
+        <button id="ffwd" onclick="ffwd()">FFWD</button>
+    </div>
 
     <script type="text/javascript">
     const objects = ["blob", "tree", "commit"];
@@ -125,6 +128,12 @@
 
     function stop() {
         network.physics.stopSimulation();
+    }
+
+    ffwd = () => {
+        network.physics.stopSimulation();
+        network.physics.stabilize(500);
+        network.physics.startSimulation();
     }
 
     load();
