@@ -21,6 +21,17 @@ func TestObjectCommit(t *testing.T) {
 	assert.Contains(t, request(t, "/api/objects/commit/627c86822eaa47167417c2c7fc99ef42c599711a"), "author Manuel Riezebosch <mriezebosch@gmail.com>")
 }
 
+func TestObjectBlob(t *testing.T) {
+	assert.Contains(t, request(t, "/api/objects/blob/eea118847928ac06875446004228e11658bcb789"), "package main")
+}
+
+func TestIndex(t *testing.T) {
+	assert.Contains(t, request(t, ""), "<html>")
+}
+func TestObjectTree(t *testing.T) {
+	assert.Contains(t, request(t, "/api/objects/tree/4e84516b47b89c12f2f9bf41f34725ef6ddce099"), "Main.go")
+}
+
 func request(t *testing.T, path string) string {
 	ts := httptest.NewServer(Routes())
 	defer ts.Close()
