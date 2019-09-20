@@ -14,6 +14,9 @@ func main() {
 		panic(err)
 	}
 
-	browser.OpenURL(fmt.Sprintf("http://localhost:%v", listener.Addr().(*net.TCPAddr).Port))
+	url := fmt.Sprintf("http://localhost:%v", listener.Addr().(*net.TCPAddr).Port)
+	fmt.Print(url)
+
+	browser.OpenURL(url)
 	panic(http.Serve(listener, Routes()))
 }
