@@ -28,6 +28,10 @@ func TestObjectBlob(t *testing.T) {
 func TestIndex(t *testing.T) {
 	assert.Contains(t, request(t, ""), "<html>")
 }
+
+func TestFavicon(t *testing.T) {
+	assert.NotContains(t, request(t, "/favicon.ico"), "404")
+}
 func TestObjectTree(t *testing.T) {
 	assert.Contains(t, request(t, "/api/objects/tree/4e84516b47b89c12f2f9bf41f34725ef6ddce099"), "Main.go")
 }

@@ -24,9 +24,15 @@ func Routes() *chi.Mux {
 	})
 	r.Use(cors.Handler)
 
-	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
-		output, _ := Asset("html/index.html")
-		w.Write(output)
+	r.Route("/", func(r chi.Router) {
+		r.Get("/", func(w http.ResponseWriter, r *http.Request) {
+			output, _ := Asset("html/index.html")
+			w.Write(output)
+		})
+		r.Get("/*", func(w http.ResponseWriter, r *http.Request) {
+			output, _ := Asset("html" + r.URL.EscapedPath())
+			w.Write(output)
+		})
 	})
 
 	r.Route("/api", func(r chi.Router) {
