@@ -9,6 +9,10 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestInfo(t *testing.T) {
+	assert.Contains(t, request(t, "/api/info"), "\"gitviz\"")
+}
+
 func TestGraph(t *testing.T) {
 	assert.Contains(t, request(t, "/api/graph"), "nodes")
 }

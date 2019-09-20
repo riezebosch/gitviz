@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"os"
+	"path/filepath"
 
 	"github.com/go-chi/render"
 
@@ -28,6 +30,7 @@ func Routes() *chi.Mux {
 	})
 
 	r.Route("/api", func(r chi.Router) {
+		r.Get("/info", getInfo)
 		r.Get("/graph", getGraph)
 		r.Route("/objects", func(r chi.Router) {
 			r.Get("/blob/{id}", getBlob)
@@ -37,6 +40,16 @@ func Routes() *chi.Mux {
 	})
 
 	return r
+}
+
+// Info from current repo
+type Info struct {
+	Directory string `json:"directory"`
+}
+
+func getInfo(w http.ResponseWriter, r *http.Request) {
+	directory, _ := os.Getwd()
+	render.JSON(w, r, Info{Directory: filepath.Base(directory)})
 }
 
 func getGraph(w http.ResponseWriter, r *http.Request) {
