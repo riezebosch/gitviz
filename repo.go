@@ -41,25 +41,25 @@ func addEdgesFromCommit(id string, commit *gitobj.Commit) (edges []Edge) {
 func visitRefs(nodes []Node, edges []Edge) ([]Node, []Edge) {
 	var files, _ = filepath.Glob(".git/refs/heads/*")
 	for _, file := range files {
-		nodes, edges = visitRef(file, nodes, edges)
+		nodes, edges = visitRef(file, nodes, edges, "head")
 	}
 
 	files, _ = filepath.Glob(".git/refs/remotes/*/*")
 	for _, file := range files {
-		nodes, edges = visitRef(file, nodes, edges)
+		nodes, edges = visitRef(file, nodes, edges, "remote")
 	}
 
 	files, _ = filepath.Glob(".git/refs/tags/*")
 	for _, file := range files {
-		nodes, edges = visitRef(file, nodes, edges)
+		nodes, edges = visitRef(file, nodes, edges, "tag")
 	}
 
 	return nodes, edges
 }
 
-func visitRef(path string, nodes []Node, edges []Edge) ([]Node, []Edge) {
+func visitRef(path string, nodes []Node, edges []Edge, t string) ([]Node, []Edge) {
 	id := refID(path[5:])
-	nodes = append(nodes, Node{ID: id, Type: "branch"})
+	nodes = append(nodes, Node{ID: id, Type: t})
 
 	to := refID(readFirstLine(path))
 	edges = append(edges, Edge{From: id, To: to})
@@ -115,5 +115,5 @@ func visitObject(repo *gitobj.ObjectDatabase, id string) (node Node, edges []Edg
 
 func visitHead(nodes []Node, edges []Edge) ([]Node, []Edge) {
 	to := refID(readFirstLine(".git/HEAD"))
-	return append(nodes, Node{ID: "HEAD", Type: "branch"}), append(edges, Edge{From: "HEAD", To: to})
+	return append(nodes, Node{ID: "HEAD", Type: "HEAD"}), append(edges, Edge{From: "HEAD", To: to})
 }

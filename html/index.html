@@ -51,13 +51,17 @@
     fetch('/api/info').then(response => response.json()).then(data => document.title = data.directory)
         
     const objects = ["blob", "tree", "commit"];
+    const refs = ["head", "remote", "tag"];
 
     toColor = (type) => {
         const mapping = new Map([
             ['blob', 'blue'],
             ['tree', 'green'],
             ['commit', 'red'],
-            ['branch', 'grey']
+            ['head', 'grey'],
+            ['tag', 'grey'],
+            ['remote', 'grey'],
+            ['HEAD', 'black']
         ]);
           
         return mapping.get(type) || 'pink'
@@ -114,6 +118,10 @@
             node = nodes.get(params.nodes[0]);
             if (objects.includes(node.type)) {
                 fetch(`/api/objects/${node.type}/${node.id}`).then(response => response.text()).then(content => data.innerText = content);
+            } else if (refs.includes(node.type)) {
+                fetch(`/api/refs/${node.type}s/${node.id}`).then(response => response.text()).then(content => data.innerText = content);
+            } else if (node.type === "HEAD") {
+                fetch(`/api/refs/HEAD`).then(response => response.text()).then(content => data.innerText = content);
             }
         } 
         return;

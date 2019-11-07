@@ -25,6 +25,22 @@ func TestObjectBlob(t *testing.T) {
 	assert.Contains(t, request(t, "/api/objects/blob/eea118847928ac06875446004228e11658bcb789"), "package main")
 }
 
+func TestRef(t *testing.T) {
+	assert.Contains(t, request(t, "/api/refs/heads/for-testing"), "627c86822eaa47167417c2c7fc99ef42c599711a")
+}
+
+func TestRefTag(t *testing.T) {
+	assert.Contains(t, request(t, "/api/refs/tags/v0.1"), "6362adfa2c2ce3adddae2ea82db7b54f6d60da34")
+}
+
+func TestRefRemoteTrackingBranch(t *testing.T) {
+	assert.Contains(t, request(t, "/api/refs/remotes/origin/for-testing"), "627c86822eaa47167417c2c7fc99ef42c599711a")
+}
+
+func TestRefHead(t *testing.T) {
+	assert.Contains(t, request(t, "/api/refs/HEAD"), "ref: refs/heads/master")
+}
+
 func TestIndex(t *testing.T) {
 	assert.Contains(t, request(t, ""), "<html>")
 }

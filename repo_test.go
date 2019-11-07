@@ -26,29 +26,29 @@ func TestVisitObjectBlob(t *testing.T) {
 
 func TestVisitBranches(t *testing.T) {
 	graph := Visit()
-	assert.Contains(t, graph.Nodes, Node{ID: "for-testing", Type: "branch"})
+	assert.Contains(t, graph.Nodes, Node{ID: "for-testing", Type: "head"})
 	assert.Contains(t, graph.Edges, Edge{From: "for-testing", To: "627c86822eaa47167417c2c7fc99ef42c599711a"})
 }
 
 func TestVisitRemoteTrackingBranches(t *testing.T) {
 	graph := Visit()
-	assert.Contains(t, graph.Nodes, Node{ID: "origin/master", Type: "branch"})
+	assert.Contains(t, graph.Nodes, Node{ID: "origin/master", Type: "remote"})
 }
 
 func TestVisitTags(t *testing.T) {
 	graph := Visit()
-	assert.Contains(t, graph.Nodes, Node{ID: "tag-for-testing", Type: "branch"})
+	assert.Contains(t, graph.Nodes, Node{ID: "tag-for-testing", Type: "tag"})
 	assert.Contains(t, graph.Edges, Edge{From: "tag-for-testing", To: "5e0ddee0751a036f9f51585aa7fb7bde5afe5000"})
 }
 
 func TestVisitHead(t *testing.T) {
 	graph := Visit()
-	assert.Contains(t, graph.Nodes, Node{ID: "HEAD", Type: "branch"})
+	assert.Contains(t, graph.Nodes, Node{ID: "HEAD", Type: "HEAD"})
 	assert.Contains(t, graph.Edges, Edge{From: "HEAD", To: "master"})
 }
 
 func TestVisitAll(t *testing.T) {
 	graph := Visit()
-	assert.Contains(t, graph.Nodes, Node{ID: "for-testing", Type: "branch"})
-	assert.Contains(t, graph.Nodes, Node{ID: "tag-for-testing", Type: "branch"})
+	assert.Contains(t, graph.Nodes, Node{ID: "for-testing", Type: "head"})
+	assert.Contains(t, graph.Nodes, Node{ID: "tag-for-testing", Type: "tag"})
 }

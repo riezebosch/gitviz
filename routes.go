@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
+	"path"
 	"path/filepath"
 
 	"github.com/go-chi/render"
@@ -38,6 +39,11 @@ func Routes() *chi.Mux {
 	r.Route("/api", func(r chi.Router) {
 		r.Get("/info", getInfo)
 		r.Get("/graph", getGraph)
+		r.Route("/refs", func(r chi.Router) {
+			r.Get("/{type}/{name}", getRef)
+			r.Get("/remotes/{remote}/{name}", getRefRemote)
+			r.Get("/HEAD", getHead)
+		})
 		r.Route("/objects", func(r chi.Router) {
 			r.Get("/blob/{id}", getBlob)
 			r.Get("/tree/{id}", getTree)
@@ -60,6 +66,22 @@ func getInfo(w http.ResponseWriter, r *http.Request) {
 
 func getGraph(w http.ResponseWriter, r *http.Request) {
 	render.JSON(w, r, Visit())
+}
+
+func getRef(w http.ResponseWriter, r *http.Request) {
+	t := chi.URLParam(r, "type")
+	n := chi.URLParam(r, "name")
+	w.Write([]byte(readFirstLine(path.Join(".git", "refs", t, n))))
+}
+
+func getRefRemote(w http.ResponseWriter, r *http.Request) {
+	t := chi.URLParam(r, "remote")
+	n := chi.URLParam(r, "name")
+	w.Write([]byte(readFirstLine(path.Join(".git", "refs", "remotes", t, n))))
+}
+
+func getHead(w http.ResponseWriter, r *http.Request) {
+	w.Write([]byte(readFirstLine(path.Join(".git", "HEAD"))))
 }
 
 func getBlob(w http.ResponseWriter, r *http.Request) {
