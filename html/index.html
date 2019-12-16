@@ -132,7 +132,7 @@
     function load() {
         fetch('/api/graph').then(response => response.json()).then(json => {
             nodes.remove(difference(nodes.get(), json.nodes, (a, b) => a.id === b.id));
-            nodes.add(difference(json.nodes, nodes.get(), (a, b) => a.id === b.id).map(x => ({ id: x.id, label: this.toLabel(x), color: this.toColor(x.type), type: x.type, title: x.id })));
+            nodes.add(difference(json.nodes, nodes.get(), (a, b) => a.id === b.id).map(x => ({ id: x.id, label: this.toLabel(x), title: x.id, color: this.toColor(x.type), type: x.type, title: x.id })));
 
             edges.remove(difference(edges.get(), json.edges, (a, b) => a.from === b.from && a.to === b.to));
             edges.add(difference(json.edges, edges.get(), (a, b) => a.from === b.from && a.to === b.to));
