@@ -5,19 +5,16 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"os"
-	"path"
 	"path/filepath"
-
-	"github.com/go-chi/render"
 
 	"github.com/git-lfs/gitobj"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/cors"
+	"github.com/go-chi/render"
 )
 
 // Routes for graph and content
-func Routes() *chi.Mux {
+func Routes(path string) *chi.Mux {
 	r := chi.NewRouter()
 	cors := cors.New(cors.Options{
 		AllowedOrigins: []string{"https://riezebosch.github.io"},
@@ -37,17 +34,17 @@ func Routes() *chi.Mux {
 	})
 
 	r.Route("/api", func(r chi.Router) {
-		r.Get("/info", getInfo)
-		r.Get("/graph", getGraph)
+		r.Get("/info", get(info, path))
+		r.Get("/graph", get(graph, path))
 		r.Route("/refs", func(r chi.Router) {
-			r.Get("/{type}/{name}", getRef)
-			r.Get("/remotes/{remote}/{name}", getRefRemote)
-			r.Get("/HEAD", getHead)
+			r.Get("/{type}/{name}", get(ref, path))
+			r.Get("/remotes/{remote}/{name}", get(remote, path))
+			r.Get("/HEAD", get(head, path))
 		})
 		r.Route("/objects", func(r chi.Router) {
-			r.Get("/blob/{id}", getBlob)
-			r.Get("/tree/{id}", getTree)
-			r.Get("/commit/{id}", getCommit)
+			r.Get("/blob/{id}", get(blob, path))
+			r.Get("/tree/{id}", get(tree, path))
+			r.Get("/commit/{id}", get(commit, path))
 		})
 	})
 
@@ -59,33 +56,37 @@ type Info struct {
 	Directory string `json:"directory"`
 }
 
-func getInfo(w http.ResponseWriter, r *http.Request) {
-	directory, _ := os.Getwd()
-	render.JSON(w, r, Info{Directory: filepath.Base(directory)})
+func info(w http.ResponseWriter, r *http.Request, path string) {
+	wd, err := filepath.Abs(filepath.Join(path, ".."))
+	if err != nil {
+		panic(err)
+	}
+
+	render.JSON(w, r, Info{Directory: filepath.Base(wd)})
 }
 
-func getGraph(w http.ResponseWriter, r *http.Request) {
-	render.JSON(w, r, Visit())
+func graph(w http.ResponseWriter, r *http.Request, path string) {
+	render.JSON(w, r, Visit(path))
 }
 
-func getRef(w http.ResponseWriter, r *http.Request) {
+func ref(w http.ResponseWriter, r *http.Request, path string) {
 	t := chi.URLParam(r, "type")
 	n := chi.URLParam(r, "name")
-	w.Write([]byte(readFirstLine(path.Join(".git", "refs", t, n))))
+	w.Write([]byte(readFirstLine(filepath.Join(path, "refs", t, n))))
 }
 
-func getRefRemote(w http.ResponseWriter, r *http.Request) {
+func remote(w http.ResponseWriter, r *http.Request, path string) {
 	t := chi.URLParam(r, "remote")
 	n := chi.URLParam(r, "name")
-	w.Write([]byte(readFirstLine(path.Join(".git", "refs", "remotes", t, n))))
+	w.Write([]byte(readFirstLine(filepath.Join(path, "refs", "remotes", t, n))))
 }
 
-func getHead(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte(readFirstLine(path.Join(".git", "HEAD"))))
+func head(w http.ResponseWriter, r *http.Request, path string) {
+	w.Write([]byte(readFirstLine(filepath.Join(path, "HEAD"))))
 }
 
-func getBlob(w http.ResponseWriter, r *http.Request) {
-	repo, _ := gitobj.FromFilesystem(".git/objects", "")
+func blob(w http.ResponseWriter, r *http.Request, path string) {
+	repo, _ := gitobj.FromFilesystem(filepath.Join(path, "objects"), "")
 	defer repo.Close()
 
 	id, err := hex.DecodeString(chi.URLParam(r, "id"))
@@ -106,7 +107,7 @@ func getBlob(w http.ResponseWriter, r *http.Request) {
 	w.Write(content)
 }
 
-func getTree(w http.ResponseWriter, r *http.Request) {
+func tree(w http.ResponseWriter, r *http.Request, path string) {
 	repo, _ := gitobj.FromFilesystem(".git/objects", "")
 	defer repo.Close()
 
@@ -125,8 +126,8 @@ func getTree(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func getCommit(w http.ResponseWriter, r *http.Request) {
-	repo, _ := gitobj.FromFilesystem(".git/objects", "")
+func commit(w http.ResponseWriter, r *http.Request, path string) {
+	repo, _ := gitobj.FromFilesystem(filepath.Join(path, "objects"), "")
 	defer repo.Close()
 
 	id, err := hex.DecodeString(chi.URLParam(r, "id"))
@@ -140,4 +141,10 @@ func getCommit(w http.ResponseWriter, r *http.Request) {
 	}
 
 	o.Encode(w)
+}
+
+func get(f func(http.ResponseWriter, *http.Request, string), path string) func(http.ResponseWriter, *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		f(w, r, path)
+	}
 }

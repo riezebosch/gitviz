@@ -18,5 +18,5 @@ func main() {
 	fmt.Print(url)
 
 	browser.OpenURL(url)
-	panic(http.Serve(listener, Routes()))
+	panic(http.Serve(listener, Routes(".git")))
 }

@@ -11,12 +11,12 @@ import (
 )
 
 // Visit repository and return directed acyclic graph
-func Visit() Graph {
+func Visit(path string) Graph {
 	var nodes = []Node{}
 	var edges = []Edge{}
-	nodes, edges = visitObjects(nodes, edges)
-	nodes, edges = visitRefs(nodes, edges)
-	nodes, edges = visitHead(nodes, edges)
+	nodes, edges = visitObjects(path, nodes, edges)
+	nodes, edges = visitRefs(path, nodes, edges)
+	nodes, edges = visitHead(path, nodes, edges)
 
 	return Graph{Nodes: nodes, Edges: edges}
 }
@@ -38,30 +38,30 @@ func addEdgesFromCommit(id string, commit *gitobj.Commit) (edges []Edge) {
 	return
 }
 
-func visitRefs(nodes []Node, edges []Edge) ([]Node, []Edge) {
-	var files, _ = filepath.Glob(".git/refs/heads/*")
+func visitRefs(path string, nodes []Node, edges []Edge) ([]Node, []Edge) {
+	var files, _ = filepath.Glob(path + "/refs/heads/*")
 	for _, file := range files {
-		nodes, edges = visitRef(file, nodes, edges, "head")
+		nodes, edges = visitRef(path, file, nodes, edges, "head")
 	}
 
-	files, _ = filepath.Glob(".git/refs/remotes/*/*")
+	files, _ = filepath.Glob(path + "/refs/remotes/*/*")
 	for _, file := range files {
-		nodes, edges = visitRef(file, nodes, edges, "remote")
+		nodes, edges = visitRef(path, file, nodes, edges, "remote")
 	}
 
-	files, _ = filepath.Glob(".git/refs/tags/*")
+	files, _ = filepath.Glob(path + "/refs/tags/*")
 	for _, file := range files {
-		nodes, edges = visitRef(file, nodes, edges, "tag")
+		nodes, edges = visitRef(path, file, nodes, edges, "tag")
 	}
 
 	return nodes, edges
 }
 
-func visitRef(path string, nodes []Node, edges []Edge, t string) ([]Node, []Edge) {
-	id := refID(path[5:])
+func visitRef(path string, file string, nodes []Node, edges []Edge, t string) ([]Node, []Edge) {
+	id := refID(file[len(path)+1:])
 	nodes = append(nodes, Node{ID: id, Type: t})
 
-	to := refID(readFirstLine(path))
+	to := refID(readFirstLine(file))
 	edges = append(edges, Edge{From: id, To: to})
 
 	return nodes, edges
@@ -77,11 +77,11 @@ func readFirstLine(path string) string {
 	return scanner.Text()
 }
 
-func visitObjects(nodes []Node, edges []Edge) ([]Node, []Edge) {
-	repo, _ := gitobj.FromFilesystem(".git/objects", "")
+func visitObjects(path string, nodes []Node, edges []Edge) ([]Node, []Edge) {
+	repo, _ := gitobj.FromFilesystem(filepath.Join(path, "objects"), "")
 	defer repo.Close()
 
-	objects, _ := filepath.Glob(".git/objects/??/*")
+	objects, _ := filepath.Glob(path + "/objects/??/*")
 	for _, object := range objects {
 		node, e, _ := visitObject(repo, objectID(object))
 		nodes = append(nodes, node)
@@ -113,7 +113,7 @@ func visitObject(repo *gitobj.ObjectDatabase, id string) (node Node, edges []Edg
 	return Node{}, edges, fmt.Errorf("Unkown object type for sha-ish %s", id)
 }
 
-func visitHead(nodes []Node, edges []Edge) ([]Node, []Edge) {
-	to := refID(readFirstLine(".git/HEAD"))
+func visitHead(path string, nodes []Node, edges []Edge) ([]Node, []Edge) {
+	to := refID(readFirstLine(filepath.Join(path, "HEAD")))
 	return append(nodes, Node{ID: "HEAD", Type: "HEAD"}), append(edges, Edge{From: "HEAD", To: to})
 }

@@ -25,5 +25,5 @@ func refID(id string) string {
 }
 
 func objectID(path string) string {
-	return path[13:15] + path[16:]
+	return path[len(path)-41:len(path)-39] + path[len(path)-38:]
 }

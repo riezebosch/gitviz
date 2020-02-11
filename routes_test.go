@@ -14,27 +14,27 @@ func TestInfo(t *testing.T) {
 }
 
 func TestGraph(t *testing.T) {
-	assert.Contains(t, request(t, "/api/graph"), "nodes")
+	assert.Contains(t, request(t, "/api/graph"), "f07c09068550591ffd7efda7814ec1dfda4a0da8")
 }
 
 func TestObjectCommit(t *testing.T) {
-	assert.Contains(t, request(t, "/api/objects/commit/627c86822eaa47167417c2c7fc99ef42c599711a"), "author Manuel Riezebosch <mriezebosch@gmail.com>")
+	assert.Contains(t, request(t, "/api/objects/commit/5b4ddc33ef3da7a248025cc228bc9ef7e860740a"), "author Manuel Riezebosch <mriezebosch@gmail.com>")
 }
 
 func TestObjectBlob(t *testing.T) {
-	assert.Contains(t, request(t, "/api/objects/blob/eea118847928ac06875446004228e11658bcb789"), "package main")
+	assert.Contains(t, request(t, "/api/objects/blob/f07c09068550591ffd7efda7814ec1dfda4a0da8"), "<html>")
 }
 
 func TestRef(t *testing.T) {
-	assert.Contains(t, request(t, "/api/refs/heads/for-testing"), "627c86822eaa47167417c2c7fc99ef42c599711a")
+	assert.Contains(t, request(t, "/api/refs/heads/simple-merge"), "6de25b8c5cd0cd49dc40d91e96f8e1cc9c2d07d8")
 }
 
 func TestRefTag(t *testing.T) {
-	assert.Contains(t, request(t, "/api/refs/tags/v0.1"), "6362adfa2c2ce3adddae2ea82db7b54f6d60da34")
+	assert.Contains(t, request(t, "/api/refs/tags/R0.1"), "07870fcf1cae67fcee108e7e0bac81a4c69842d0")
 }
 
 func TestRefRemoteTrackingBranch(t *testing.T) {
-	assert.Contains(t, request(t, "/api/refs/remotes/origin/for-testing"), "627c86822eaa47167417c2c7fc99ef42c599711a")
+	assert.NotEmpty(t, request(t, "/api/refs/remotes/github/master"))
 }
 
 func TestRefHead(t *testing.T) {
@@ -53,7 +53,7 @@ func TestObjectTree(t *testing.T) {
 }
 
 func request(t *testing.T, path string) string {
-	ts := httptest.NewServer(Routes())
+	ts := httptest.NewServer(Routes("test-repo.git"))
 	defer ts.Close()
 
 	req, err := http.NewRequest("GET", ts.URL+path, nil)

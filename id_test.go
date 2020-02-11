@@ -27,6 +27,11 @@ func TestObjectId(t *testing.T) {
 	assert.Equal(t, "00507eabbf76528884df48a1c9fe30434825bf57", objectID(path))
 }
 
+func TestObjectIdFromNonGitPath(t *testing.T) {
+	path := "test-repo.git/objects/05/a8da24ba96d54811f7ea93d527968e2dee3c41"
+	assert.Equal(t, "05a8da24ba96d54811f7ea93d527968e2dee3c41", objectID(path))
+}
+
 func TestRefIdWindows(t *testing.T) {
 	id := refID(filepath.Join("refs", "tags", "0.1"))
 	assert.Equal(t, "0.1", id)

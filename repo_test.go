@@ -7,48 +7,48 @@ import (
 )
 
 func TestVisitObjectTree(t *testing.T) {
-	graph := Visit()
-	assert.Contains(t, graph.Nodes, Node{Type: "tree", ID: "4e84516b47b89c12f2f9bf41f34725ef6ddce099"})
-	assert.Contains(t, graph.Edges, Edge{From: "4e84516b47b89c12f2f9bf41f34725ef6ddce099", To: "eea118847928ac06875446004228e11658bcb789"})
+	graph := Visit("test-repo.git")
+	assert.Contains(t, graph.Nodes, Node{Type: "tree", ID: "9a96926442f477a2b03ae06cfffcab8393748218"})
+	assert.Contains(t, graph.Edges, Edge{From: "9a96926442f477a2b03ae06cfffcab8393748218", To: "f07c09068550591ffd7efda7814ec1dfda4a0da8"})
 }
 
 func TestVisitObjectCommit(t *testing.T) {
-	graph := Visit()
-	assert.Contains(t, graph.Nodes, Node{Type: "commit", ID: "bb4840c0b5dc29bcb7d4e0e2e5d1b9e9dec721e5"})
-	assert.Contains(t, graph.Edges, Edge{From: "bb4840c0b5dc29bcb7d4e0e2e5d1b9e9dec721e5", To: "c932e6ae3a32d3cdea9dd8043c165e52495ea4c9"})
-	assert.Contains(t, graph.Edges, Edge{From: "bb4840c0b5dc29bcb7d4e0e2e5d1b9e9dec721e5", To: "3dda9e9c4e40b7e1b743793075850eadf5817ab5"})
+	graph := Visit("test-repo.git")
+	assert.Contains(t, graph.Nodes, Node{Type: "commit", ID: "5b4ddc33ef3da7a248025cc228bc9ef7e860740a"})
+	assert.Contains(t, graph.Edges, Edge{From: "5b4ddc33ef3da7a248025cc228bc9ef7e860740a", To: "9a96926442f477a2b03ae06cfffcab8393748218"})
+	assert.Contains(t, graph.Edges, Edge{From: "5b4ddc33ef3da7a248025cc228bc9ef7e860740a", To: "408a3337cc79ba20939e223697fb6276628992a4"})
 }
 
 func TestVisitObjectBlob(t *testing.T) {
-	graph := Visit()
-	assert.Contains(t, graph.Nodes, Node{ID: "eea118847928ac06875446004228e11658bcb789", Type: "blob"})
+	graph := Visit("test-repo.git")
+	assert.Contains(t, graph.Nodes, Node{ID: "f07c09068550591ffd7efda7814ec1dfda4a0da8", Type: "blob"})
 }
 
 func TestVisitBranches(t *testing.T) {
-	graph := Visit()
-	assert.Contains(t, graph.Nodes, Node{ID: "for-testing", Type: "head"})
-	assert.Contains(t, graph.Edges, Edge{From: "for-testing", To: "627c86822eaa47167417c2c7fc99ef42c599711a"})
+	graph := Visit("test-repo.git")
+	assert.Contains(t, graph.Nodes, Node{ID: "simple-merge", Type: "head"})
+	assert.Contains(t, graph.Edges, Edge{From: "simple-merge", To: "6de25b8c5cd0cd49dc40d91e96f8e1cc9c2d07d8"})
 }
 
 func TestVisitRemoteTrackingBranches(t *testing.T) {
-	graph := Visit()
-	assert.Contains(t, graph.Nodes, Node{ID: "origin/master", Type: "remote"})
+	graph := Visit("test-repo.git")
+	assert.Contains(t, graph.Nodes, Node{ID: "github/master", Type: "remote"})
 }
 
 func TestVisitTags(t *testing.T) {
-	graph := Visit()
-	assert.Contains(t, graph.Nodes, Node{ID: "tag-for-testing", Type: "tag"})
-	assert.Contains(t, graph.Edges, Edge{From: "tag-for-testing", To: "5e0ddee0751a036f9f51585aa7fb7bde5afe5000"})
+	graph := Visit("test-repo.git")
+	assert.Contains(t, graph.Nodes, Node{ID: "R0.1", Type: "tag"})
+	assert.Contains(t, graph.Edges, Edge{From: "R0.1", To: "07870fcf1cae67fcee108e7e0bac81a4c69842d0"})
 }
 
 func TestVisitHead(t *testing.T) {
-	graph := Visit()
+	graph := Visit("test-repo.git")
 	assert.Contains(t, graph.Nodes, Node{ID: "HEAD", Type: "HEAD"})
 	assert.Contains(t, graph.Edges, Edge{From: "HEAD", To: "master"})
 }
 
 func TestVisitAll(t *testing.T) {
-	graph := Visit()
-	assert.Contains(t, graph.Nodes, Node{ID: "for-testing", Type: "head"})
-	assert.Contains(t, graph.Nodes, Node{ID: "tag-for-testing", Type: "tag"})
+	graph := Visit("test-repo.git")
+	assert.Contains(t, graph.Nodes, Node{ID: "simple-merge", Type: "head"})
+	assert.Contains(t, graph.Nodes, Node{ID: "R0.1", Type: "tag"})
 }
