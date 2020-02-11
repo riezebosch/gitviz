@@ -1,0 +1,13 @@
+[core]
+	repositoryformatversion = 0
+	filemode = true
+	bare = false
+	logallrefupdates = true
+	ignorecase = true
+	precomposeunicode = true
+[remote "azure-devops"]
+	url = https://manuel@dev.azure.com/manuel/git-demo/_git/git-demo
+	fetch = +refs/heads/*:refs/remotes/azure-devops/*
+[remote "github"]
+	url = https://github.com/riezebosch/git-demo.git
+	fetch = +refs/heads/*:refs/remotes/github/*

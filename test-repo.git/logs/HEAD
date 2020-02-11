@@ -1,0 +1,41 @@
+0000000000000000000000000000000000000000 2af1aa0b6cb5edcb656503c2d3cf4e53938b48a8 Manuel Riezebosch <mriezebosch@gmail.com> 1581347901 +0100	commit (initial): first commit
+2af1aa0b6cb5edcb656503c2d3cf4e53938b48a8 ca6ebd6b7e0565498fed6e4eafac68913f586b14 Manuel Riezebosch <mriezebosch@gmail.com> 1581348281 +0100	commit: background color in css
+ca6ebd6b7e0565498fed6e4eafac68913f586b14 9687993785b9a18a2544c6bcc971fcd613f90733 Manuel Riezebosch <mriezebosch@gmail.com> 1581348445 +0100	commit: background in blue
+9687993785b9a18a2544c6bcc971fcd613f90733 ca6ebd6b7e0565498fed6e4eafac68913f586b14 Manuel Riezebosch <mriezebosch@gmail.com> 1581348833 +0100	checkout: moving from master to my-feature
+ca6ebd6b7e0565498fed6e4eafac68913f586b14 07870fcf1cae67fcee108e7e0bac81a4c69842d0 Manuel Riezebosch <mriezebosch@gmail.com> 1581348864 +0100	commit: commit on feature branch
+07870fcf1cae67fcee108e7e0bac81a4c69842d0 07870fcf1cae67fcee108e7e0bac81a4c69842d0 Manuel Riezebosch <mriezebosch@gmail.com> 1581349570 +0100	checkout: moving from my-feature to R0.1
+07870fcf1cae67fcee108e7e0bac81a4c69842d0 0cb5cf41bf6b2103b803b24c1f819864b626df45 Manuel Riezebosch <mriezebosch@gmail.com> 1581349641 +0100	commit: detached, not feeling well
+0cb5cf41bf6b2103b803b24c1f819864b626df45 07870fcf1cae67fcee108e7e0bac81a4c69842d0 Manuel Riezebosch <mriezebosch@gmail.com> 1581349704 +0100	checkout: moving from 0cb5cf41bf6b2103b803b24c1f819864b626df45 to my-feature
+07870fcf1cae67fcee108e7e0bac81a4c69842d0 07870fcf1cae67fcee108e7e0bac81a4c69842d0 Manuel Riezebosch <mriezebosch@gmail.com> 1581349863 +0100	checkout: moving from my-feature to R0.1
+07870fcf1cae67fcee108e7e0bac81a4c69842d0 07870fcf1cae67fcee108e7e0bac81a4c69842d0 Manuel Riezebosch <mriezebosch@gmail.com> 1581350050 +0100	checkout: moving from 07870fcf1cae67fcee108e7e0bac81a4c69842d0 to my-feature
+07870fcf1cae67fcee108e7e0bac81a4c69842d0 07870fcf1cae67fcee108e7e0bac81a4c69842d0 Manuel Riezebosch <mriezebosch@gmail.com> 1581350053 +0100	checkout: moving from my-feature to 07870fcf1cae67fcee108e7e0bac81a4c69842d0
+07870fcf1cae67fcee108e7e0bac81a4c69842d0 07870fcf1cae67fcee108e7e0bac81a4c69842d0 Manuel Riezebosch <mriezebosch@gmail.com> 1581350054 +0100	checkout: moving from 07870fcf1cae67fcee108e7e0bac81a4c69842d0 to my-feature
+07870fcf1cae67fcee108e7e0bac81a4c69842d0 07870fcf1cae67fcee108e7e0bac81a4c69842d0 Manuel Riezebosch <mriezebosch@gmail.com> 1581350055 +0100	checkout: moving from my-feature to 07870fcf1cae67fcee108e7e0bac81a4c69842d0
+07870fcf1cae67fcee108e7e0bac81a4c69842d0 07870fcf1cae67fcee108e7e0bac81a4c69842d0 Manuel Riezebosch <mriezebosch@gmail.com> 1581350055 +0100	checkout: moving from 07870fcf1cae67fcee108e7e0bac81a4c69842d0 to my-feature
+07870fcf1cae67fcee108e7e0bac81a4c69842d0 9687993785b9a18a2544c6bcc971fcd613f90733 Manuel Riezebosch <mriezebosch@gmail.com> 1581350089 +0100	checkout: moving from my-feature to master
+9687993785b9a18a2544c6bcc971fcd613f90733 9687993785b9a18a2544c6bcc971fcd613f90733 Manuel Riezebosch <mriezebosch@gmail.com> 1581350104 +0100	checkout: moving from master to simple-merge
+9687993785b9a18a2544c6bcc971fcd613f90733 6de25b8c5cd0cd49dc40d91e96f8e1cc9c2d07d8 Manuel Riezebosch <mriezebosch@gmail.com> 1581350143 +0100	commit: easy merge, background orange
+6de25b8c5cd0cd49dc40d91e96f8e1cc9c2d07d8 9687993785b9a18a2544c6bcc971fcd613f90733 Manuel Riezebosch <mriezebosch@gmail.com> 1581350241 +0100	checkout: moving from simple-merge to master
+9687993785b9a18a2544c6bcc971fcd613f90733 6de25b8c5cd0cd49dc40d91e96f8e1cc9c2d07d8 Manuel Riezebosch <mriezebosch@gmail.com> 1581350331 +0100	merge simple-merge: Fast-forward
+6de25b8c5cd0cd49dc40d91e96f8e1cc9c2d07d8 137079caa44182e93f862b7f749406e8bc964d68 Manuel Riezebosch <mriezebosch@gmail.com> 1581350440 +0100	merge my-feature: Merge made by the 'recursive' strategy.
+137079caa44182e93f862b7f749406e8bc964d68 07870fcf1cae67fcee108e7e0bac81a4c69842d0 Manuel Riezebosch <mriezebosch@gmail.com> 1581350614 +0100	checkout: moving from master to my-feature
+07870fcf1cae67fcee108e7e0bac81a4c69842d0 94d916abee747e969b7dc3236fbbfb3246086edb Manuel Riezebosch <mriezebosch@gmail.com> 1581350716 +0100	commit: probably a conflict
+94d916abee747e969b7dc3236fbbfb3246086edb 137079caa44182e93f862b7f749406e8bc964d68 Manuel Riezebosch <mriezebosch@gmail.com> 1581350719 +0100	checkout: moving from my-feature to master
+137079caa44182e93f862b7f749406e8bc964d68 fd3fb192a472fceed3c90b1a280f28fccec73472 Manuel Riezebosch <mriezebosch@gmail.com> 1581350788 +0100	commit (merge): Merge branch 'my-feature-sdasdf'
+fd3fb192a472fceed3c90b1a280f28fccec73472 5ec56758dd6d1e29baff78b1bedaa76b91218eb8 Manuel Riezebosch <mriezebosch@gmail.com> 1581351694 +0100	pull azure-devops master: Fast-forward
+5ec56758dd6d1e29baff78b1bedaa76b91218eb8 5ec56758dd6d1e29baff78b1bedaa76b91218eb8 Manuel Riezebosch <mriezebosch@gmail.com> 1581352956 +0100	checkout: moving from master to rebase-demo
+5ec56758dd6d1e29baff78b1bedaa76b91218eb8 250d4d2e39ffdc3f8cdbb3a064b8d53cf1cae85b Manuel Riezebosch <mriezebosch@gmail.com> 1581352980 +0100	commit: rebase demo
+250d4d2e39ffdc3f8cdbb3a064b8d53cf1cae85b 5ec56758dd6d1e29baff78b1bedaa76b91218eb8 Manuel Riezebosch <mriezebosch@gmail.com> 1581352982 +0100	checkout: moving from rebase-demo to master
+5ec56758dd6d1e29baff78b1bedaa76b91218eb8 408a3337cc79ba20939e223697fb6276628992a4 Manuel Riezebosch <mriezebosch@gmail.com> 1581352999 +0100	commit: conflict with rebase branch
+408a3337cc79ba20939e223697fb6276628992a4 250d4d2e39ffdc3f8cdbb3a064b8d53cf1cae85b Manuel Riezebosch <mriezebosch@gmail.com> 1581353127 +0100	checkout: moving from master to rebase-demo
+250d4d2e39ffdc3f8cdbb3a064b8d53cf1cae85b 408a3337cc79ba20939e223697fb6276628992a4 Manuel Riezebosch <mriezebosch@gmail.com> 1581353136 +0100	rebase: checkout master
+408a3337cc79ba20939e223697fb6276628992a4 6ec94c2e114d1bceda3402fff155d64b3a52ebba Manuel Riezebosch <mriezebosch@gmail.com> 1581353136 +0100	rebase: rebase demo
+6ec94c2e114d1bceda3402fff155d64b3a52ebba 6ec94c2e114d1bceda3402fff155d64b3a52ebba Manuel Riezebosch <mriezebosch@gmail.com> 1581353136 +0100	rebase finished: returning to refs/heads/rebase-demo
+6ec94c2e114d1bceda3402fff155d64b3a52ebba 408a3337cc79ba20939e223697fb6276628992a4 Manuel Riezebosch <mriezebosch@gmail.com> 1581353200 +0100	checkout: moving from rebase-demo to master
+408a3337cc79ba20939e223697fb6276628992a4 6ec94c2e114d1bceda3402fff155d64b3a52ebba Manuel Riezebosch <mriezebosch@gmail.com> 1581353204 +0100	merge rebase-demo: Fast-forward
+6ec94c2e114d1bceda3402fff155d64b3a52ebba 137079caa44182e93f862b7f749406e8bc964d68 Manuel Riezebosch <mriezebosch@gmail.com> 1581353398 +0100	rebase: checkout HEAD~4
+137079caa44182e93f862b7f749406e8bc964d68 6ec94c2e114d1bceda3402fff155d64b3a52ebba Manuel Riezebosch <mriezebosch@gmail.com> 1581353409 +0100	rebase: updating HEAD
+6ec94c2e114d1bceda3402fff155d64b3a52ebba 137079caa44182e93f862b7f749406e8bc964d68 Manuel Riezebosch <mriezebosch@gmail.com> 1581353554 +0100	rebase -i (start): checkout HEAD~4
+137079caa44182e93f862b7f749406e8bc964d68 6ec94c2e114d1bceda3402fff155d64b3a52ebba Manuel Riezebosch <mriezebosch@gmail.com> 1581353558 +0100	rebase -i (abort): updating HEAD
+6ec94c2e114d1bceda3402fff155d64b3a52ebba f2aee1c1286747e66ac39bf707dca5ec8db4cd2c Manuel Riezebosch <mriezebosch@gmail.com> 1581353570 +0100	commit (amend): rebase demo
+f2aee1c1286747e66ac39bf707dca5ec8db4cd2c 5b4ddc33ef3da7a248025cc228bc9ef7e860740a Manuel Riezebosch <mriezebosch@gmail.com> 1581353628 +0100	commit (amend): rebase demo.

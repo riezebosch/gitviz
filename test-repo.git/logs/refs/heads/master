@@ -1,0 +1,11 @@
+0000000000000000000000000000000000000000 2af1aa0b6cb5edcb656503c2d3cf4e53938b48a8 Manuel Riezebosch <mriezebosch@gmail.com> 1581347901 +0100	commit (initial): first commit
+2af1aa0b6cb5edcb656503c2d3cf4e53938b48a8 ca6ebd6b7e0565498fed6e4eafac68913f586b14 Manuel Riezebosch <mriezebosch@gmail.com> 1581348281 +0100	commit: background color in css
+ca6ebd6b7e0565498fed6e4eafac68913f586b14 9687993785b9a18a2544c6bcc971fcd613f90733 Manuel Riezebosch <mriezebosch@gmail.com> 1581348445 +0100	commit: background in blue
+9687993785b9a18a2544c6bcc971fcd613f90733 6de25b8c5cd0cd49dc40d91e96f8e1cc9c2d07d8 Manuel Riezebosch <mriezebosch@gmail.com> 1581350331 +0100	merge simple-merge: Fast-forward
+6de25b8c5cd0cd49dc40d91e96f8e1cc9c2d07d8 137079caa44182e93f862b7f749406e8bc964d68 Manuel Riezebosch <mriezebosch@gmail.com> 1581350440 +0100	merge my-feature: Merge made by the 'recursive' strategy.
+137079caa44182e93f862b7f749406e8bc964d68 fd3fb192a472fceed3c90b1a280f28fccec73472 Manuel Riezebosch <mriezebosch@gmail.com> 1581350788 +0100	commit (merge): Merge branch 'my-feature-sdasdf'
+fd3fb192a472fceed3c90b1a280f28fccec73472 5ec56758dd6d1e29baff78b1bedaa76b91218eb8 Manuel Riezebosch <mriezebosch@gmail.com> 1581351694 +0100	pull azure-devops master: Fast-forward
+5ec56758dd6d1e29baff78b1bedaa76b91218eb8 408a3337cc79ba20939e223697fb6276628992a4 Manuel Riezebosch <mriezebosch@gmail.com> 1581352999 +0100	commit: conflict with rebase branch
+408a3337cc79ba20939e223697fb6276628992a4 6ec94c2e114d1bceda3402fff155d64b3a52ebba Manuel Riezebosch <mriezebosch@gmail.com> 1581353204 +0100	merge rebase-demo: Fast-forward
+6ec94c2e114d1bceda3402fff155d64b3a52ebba f2aee1c1286747e66ac39bf707dca5ec8db4cd2c Manuel Riezebosch <mriezebosch@gmail.com> 1581353570 +0100	commit (amend): rebase demo
+f2aee1c1286747e66ac39bf707dca5ec8db4cd2c 5b4ddc33ef3da7a248025cc228bc9ef7e860740a Manuel Riezebosch <mriezebosch@gmail.com> 1581353628 +0100	commit (amend): rebase demo.
