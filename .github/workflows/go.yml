@@ -1,0 +1,24 @@
+on: [push, pull_request]
+name: Test
+jobs:
+  test:
+    strategy:
+      matrix:
+        go-version: [1.12.x, 1.13.x]
+        platform: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.platform }}
+    steps:
+    - name: install
+      uses: actions/setup-go@v1
+      with:
+        go-version: ${{ matrix.go-version }}
+    - uses: actions/checkout@v1
+    - run: |
+        git fetch --all
+    - name: get dependencies
+      run: |
+        go get -v -t -d ./...
+    - name: build
+      run: go build -v .
+    - name: test
+      run: go test ./...

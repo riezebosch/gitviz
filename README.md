@@ -1,5 +1,7 @@
 ## gitviz
 
+![Test](https://github.com/riezebosch/gitviz/workflows/Test/badge.svg)
+
 For education purposes: visualize the git repository real time revealing the blobs, trees and commits that make up
 the [git data structure](https://eagain.net/articles/git-for-computer-scientists/).
 
