@@ -30,6 +30,6 @@ func main() {
 
 	browser.OpenURL(url)
 	path := flag.Arg(0)
-	fmt.Print(path)
+
 	panic(http.Serve(listener, Routes(path)))
 }
