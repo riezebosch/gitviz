@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!-- Do not remove this test for UTF-8: if “Ω” doesn’t appear as greek uppercase omega letter enclosed in quotation marks, you should use an editor that supports UTF-8, not this one. -->
+<package xmlns="http://schemas.microsoft.com/packaging/2015/06/nuspec.xsd">
+  <metadata>
+    <id>gitviz</id>
+    <version>0.4</version>
+    <title>gitviz</title>
+    <authors>riezebosch</authors>
+    <projectUrl>https://github.com/riezebosch/gitviz</projectUrl>
+    <projectSourceUrl>https://github.com/riezebosch/gitviz</projectSourceUrl>
+    <packageSourceUrl>https://github.com/riezebosch/gitviz-choco</packageSourceUrl>
+    <licenseUrl>https://github.com/riezebosch/gitviz/blob/master/LICENSE</licenseUrl>
+    <tags>gitviz git dag graph visualization visualize</tags>
+    <summary>Visualize the directed acyclic graph that makes up your repository!</summary>
+    <description>
+      For education purposes: visualize the git repository real time revealing the blobs, trees and commits that make up
+      the [git data structure](https://github.com/riezebosch/gitviz/raw/master/img/graph.png).
+    </description>
+  </metadata>
+  <files>
+    <file src="tools\**" target="tools" />
+    <file src="..\dist\windows\amd64\**" target="tools" />
+  </files>
+</package>
