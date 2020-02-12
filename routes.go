@@ -5,7 +5,9 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/git-lfs/gitobj"
 	"github.com/go-chi/chi"
@@ -14,7 +16,7 @@ import (
 )
 
 // Routes for graph and content
-func Routes(path string) *chi.Mux {
+func Routes(wd string) *chi.Mux {
 	r := chi.NewRouter()
 	cors := cors.New(cors.Options{
 		AllowedOrigins: []string{"https://riezebosch.github.io"},
@@ -33,18 +35,24 @@ func Routes(path string) *chi.Mux {
 		})
 	})
 
+	if wd == "" {
+		wd, _ = os.Getwd()
+	}
+
+	repo := repo(wd)
+
 	r.Route("/api", func(r chi.Router) {
-		r.Get("/info", get(info, path))
-		r.Get("/graph", get(graph, path))
+		r.Get("/info", get(info, wd))
+		r.Get("/graph", get(graph, repo))
 		r.Route("/refs", func(r chi.Router) {
-			r.Get("/{type}/{name}", get(ref, path))
-			r.Get("/remotes/{remote}/{name}", get(remote, path))
-			r.Get("/HEAD", get(head, path))
+			r.Get("/{type}/{name}", get(ref, repo))
+			r.Get("/remotes/{remote}/{name}", get(remote, repo))
+			r.Get("/HEAD", get(head, repo))
 		})
 		r.Route("/objects", func(r chi.Router) {
-			r.Get("/blob/{id}", get(blob, path))
-			r.Get("/tree/{id}", get(tree, path))
-			r.Get("/commit/{id}", get(commit, path))
+			r.Get("/blob/{id}", get(blob, repo))
+			r.Get("/tree/{id}", get(tree, repo))
+			r.Get("/commit/{id}", get(commit, repo))
 		})
 	})
 
@@ -56,12 +64,7 @@ type Info struct {
 	Directory string `json:"directory"`
 }
 
-func info(w http.ResponseWriter, r *http.Request, path string) {
-	wd, err := filepath.Abs(filepath.Join(path, ".."))
-	if err != nil {
-		panic(err)
-	}
-
+func info(w http.ResponseWriter, r *http.Request, wd string) {
 	render.JSON(w, r, Info{Directory: filepath.Base(wd)})
 }
 
@@ -147,4 +150,12 @@ func get(f func(http.ResponseWriter, *http.Request, string), path string) func(h
 	return func(w http.ResponseWriter, r *http.Request) {
 		f(w, r, path)
 	}
+}
+
+func repo(wd string) string {
+	if strings.HasSuffix(wd, ".git") != true {
+		return filepath.Join(wd, ".git")
+	}
+
+	return wd
 }

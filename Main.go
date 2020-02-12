@@ -1,15 +1,26 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"net"
 	"net/http"
+	"os"
 
 	"github.com/pkg/browser"
 )
 
 func main() {
-	listener, err := net.Listen("tcp", ":0")
+	port := flag.Int("port", 0, "")
+	flag.Usage = func() {
+		fmt.Println(fmt.Sprintf("%s [flags] [repository]", os.Args[0]))
+		fmt.Println()
+		fmt.Println("flags:")
+		flag.PrintDefaults()
+	}
+	flag.Parse()
+
+	listener, err := net.Listen("tcp", fmt.Sprintf(":%v", *port))
 	if err != nil {
 		panic(err)
 	}
@@ -18,5 +29,7 @@ func main() {
 	fmt.Print(url)
 
 	browser.OpenURL(url)
-	panic(http.Serve(listener, Routes(".git")))
+	path := flag.Arg(0)
+	fmt.Print(path)
+	panic(http.Serve(listener, Routes(path)))
 }
