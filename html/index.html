@@ -50,7 +50,7 @@
     </div>
 
     <script type="text/javascript">
-    fetch('/api/info').then(response => response.json()).then(data => document.title = data.directory)
+    fetch('api/info').then(response => response.json()).then(data => document.title = data.directory)
         
     const objects = ["blob", "tree", "commit"];
     const refs = ["head", "remote", "tag"];
