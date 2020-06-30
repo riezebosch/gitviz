@@ -38,20 +38,27 @@ func addEdgesFromCommit(id string, commit *gitobj.Commit) (edges []Edge) {
 	return
 }
 
-func visitRefs(path string, nodes []Node, edges []Edge) ([]Node, []Edge) {
-	var files, _ = filepath.Glob(path + "/refs/heads/*")
+func visitRefs(root string, nodes []Node, edges []Edge) ([]Node, []Edge) {
+	filepath.Walk(root+"/refs/heads", func(path string, info os.FileInfo, e error) error {
+		if e != nil {
+			return e
+		}
+
+		if info.Mode().IsRegular() {
+			nodes, edges = visitRef(root, path, nodes, edges, "head")
+		}
+
+		return nil
+	})
+
+	var files, _ = filepath.Glob(root + "/refs/remotes/*/*")
 	for _, file := range files {
-		nodes, edges = visitRef(path, file, nodes, edges, "head")
+		nodes, edges = visitRef(root, file, nodes, edges, "remote")
 	}
 
-	files, _ = filepath.Glob(path + "/refs/remotes/*/*")
+	files, _ = filepath.Glob(root + "/refs/tags/*")
 	for _, file := range files {
-		nodes, edges = visitRef(path, file, nodes, edges, "remote")
-	}
-
-	files, _ = filepath.Glob(path + "/refs/tags/*")
-	for _, file := range files {
-		nodes, edges = visitRef(path, file, nodes, edges, "tag")
+		nodes, edges = visitRef(root, file, nodes, edges, "tag")
 	}
 
 	return nodes, edges

@@ -30,6 +30,12 @@ func TestVisitBranches(t *testing.T) {
 	assert.Contains(t, graph.Edges, Edge{From: "simple-merge", To: "6de25b8c5cd0cd49dc40d91e96f8e1cc9c2d07d8"})
 }
 
+func TestVisitFolderBranches(t *testing.T) {
+	graph := Visit("test-repo.git")
+	assert.Contains(t, graph.Nodes, Node{ID: "feature/x", Type: "head"})
+	assert.NotContains(t, graph.Nodes, Node{ID: "feature", Type: "head"})
+}
+
 func TestVisitRemoteTrackingBranches(t *testing.T) {
 	graph := Visit("test-repo.git")
 	assert.Contains(t, graph.Nodes, Node{ID: "github/master", Type: "remote"})

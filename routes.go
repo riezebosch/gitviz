@@ -45,7 +45,7 @@ func Routes(wd string) *chi.Mux {
 		r.Get("/info", get(info, wd))
 		r.Get("/graph", get(graph, repo))
 		r.Route("/refs", func(r chi.Router) {
-			r.Get("/{type}/{name}", get(ref, repo))
+			r.Get("/{type}/*", get(ref, repo))
 			r.Get("/remotes/{remote}/{name}", get(remote, repo))
 			r.Get("/HEAD", get(head, repo))
 		})
@@ -74,7 +74,7 @@ func graph(w http.ResponseWriter, r *http.Request, path string) {
 
 func ref(w http.ResponseWriter, r *http.Request, path string) {
 	t := chi.URLParam(r, "type")
-	n := chi.URLParam(r, "name")
+	n := chi.URLParam(r, "*")
 	w.Write([]byte(readFirstLine(filepath.Join(path, "refs", t, n))))
 }
 

@@ -37,6 +37,10 @@ func TestRef(t *testing.T) {
 	assert.Contains(t, request(t, "test-repo.git", "/api/refs/heads/simple-merge"), "6de25b8c5cd0cd49dc40d91e96f8e1cc9c2d07d8")
 }
 
+func TestFolderRef(t *testing.T) {
+	assert.Contains(t, request(t, "test-repo.git", "/api/refs/heads/feature/x"), "5b4ddc33ef3da7a248025cc228bc9ef7e860740a")
+}
+
 func TestRefTag(t *testing.T) {
 	assert.Contains(t, request(t, "test-repo.git", "/api/refs/tags/R0.1"), "07870fcf1cae67fcee108e7e0bac81a4c69842d0")
 }
