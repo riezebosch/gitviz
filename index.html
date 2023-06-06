@@ -12,6 +12,7 @@
             width: 100%;
             margin: 0;
             padding: 0;
+            font-family: Arial, Helvetica, sans-serif;
         }
 
         #mynetwork {
@@ -41,10 +42,8 @@
         }
 
         #filter {
-            position: fixed;
-            left: 2em;
-            top: 4em;
-            font-family: Arial, Helvetica, sans-serif;
+            list-style-type: none;
+            padding: 0;
         }
     </style>
 </head>
@@ -97,29 +96,38 @@
         }
     </style>
     <div id="buttons">
-        <button id="stop" onclick="stop()">STOP</button>
-        <button id="ffwd" onclick="ffwd()">FFWD</button>
+        <div>
+            <button id="stop" onclick="stop()">STOP</button>
+            <button id="ffwd" onclick="ffwd()">FFWD</button>
+        </div>
+        <ul id="filter">
+            <li>
+                <label>
+                    <input type="checkbox" name="filter" value="commit" checked />
+                    <span style="color: red">commit</span>
+                </label>
+            </li>
+            <li>
+                <label>
+                    <input type="checkbox" name="filter" value="tree" checked />
+                    <span style="color: green">tree</span>
+                </label>
+            </li>
+            <li>
+                <label>
+                    <input type="checkbox" name="filter" value="blob" checked />
+                    <span style="color: blue">blob</span>
+                </label>
+            </li>
+        </ul>
+        <div>
+            <label>
+                <input type="checkbox" id="hierarchy" value="hierarchy" checked />
+                <span>hierarchy</span>
+            </label>
+        </div>
     </div>
-    <div id="filter">
-        <div>
-            <label>
-                <input type="checkbox" name="filter" value="commit" checked />
-                <span style="color: red">commit</span>
-            </label>
-        </div>
-        <div>
-            <label>
-                <input type="checkbox" name="filter" value="tree" checked />
-                <span style="color: green">tree</span>
-            </label>
-        </div>
-        <div>
-            <label>
-                <input type="checkbox" name="filter" value="blob" checked />
-                <span style="color: blue">blob</span>
-            </label>
-        </div>
-    </div>
+
     <script type="text/javascript">
         fetch('api/info').then(response => response.json()).then(data => document.title = data.directory)
 
@@ -245,6 +253,13 @@
                 filter[value] = checked;
                 nodesView.refresh();
             }))
+
+        document.getElementById("hierarchy").addEventListener("change", (e) => {
+            const { checked } = e.target;
+            options.layout.hierarchical.enabled = checked;
+            network.setOptions(options);
+        });
+
     </script>
 </body>
 
