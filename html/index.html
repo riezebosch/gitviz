@@ -12,6 +12,7 @@
             width: 100%;
             margin: 0;
             padding: 0;
+            font-family: Arial, Helvetica, sans-serif;
         }
 
         #mynetwork {
@@ -41,10 +42,8 @@
         }
 
         #filter {
-            position: fixed;
-            left: 2em;
-            top: 4em;
-            font-family: Arial, Helvetica, sans-serif;
+            list-style-type: none;
+            padding: 0;
         }
     </style>
 </head>
@@ -97,77 +96,98 @@
         }
     </style>
     <div id="buttons">
-        <button id="physics" onclick="stop()">STOP</button>
-        <button id="ffwd" onclick="ffwd()">FFWD</button>
+        <div>
+            <button id="stop" onclick="stop()">STOP</button>
+            <button id="ffwd" onclick="ffwd()">FFWD</button>
+        </div>
+        <ul id="filter">
+            <li>
+                <label>
+                    <input type="checkbox" name="filter" value="commit" checked />
+                    <span style="color: red">commit</span>
+                </label>
+            </li>
+            <li>
+                <label>
+                    <input type="checkbox" name="filter" value="tree" checked />
+                    <span style="color: green">tree</span>
+                </label>
+            </li>
+            <li>
+                <label>
+                    <input type="checkbox" name="filter" value="blob" checked />
+                    <span style="color: blue">blob</span>
+                </label>
+            </li>
+        </ul>
+        <div>
+            <label>
+                <input type="checkbox" id="hierarchy" value="hierarchy" checked />
+                <span>hierarchy</span>
+            </label>
+        </div>
     </div>
-    <div id="filter">
-        <div>
-            <label>
-                <input type="checkbox" name="type" value="commit" checked />
-                <span style="color: red">commit</span>
-            </label>
-        </div>
-        <div>
-            <label>
-                <input type="checkbox" name="type" value="tree" checked />
-                <span style="color: green">tree</span>
-            </label>
-        </div>
-        <div>
-            <label>
-                <input type="checkbox" name="type" value="blob" checked />
-                <span style="color: blue">blob</span>
-            </label>
-        </div>
-    </div>
+
     <script type="text/javascript">
         fetch('api/info').then(response => response.json()).then(data => document.title = data.directory)
 
         const objects = ["blob", "tree", "commit"];
         const refs = ["head", "remote", "tag"];
 
-        toColor = (type) => {
-            const mapping = new Map([
-                ['blob', 'blue'],
-                ['tree', 'green'],
-                ['commit', 'red'],
-                ['head', 'grey'],
-                ['tag', 'grey'],
-                ['remote', 'grey'],
-                ['HEAD', 'black']
-            ]);
 
-            return mapping.get(type) || 'pink'
+        const filter = {
+            commit: true,
+            tree: true,
+            blob: true,
+            head: true,
+            HEAD: true,
+            remote: true,
+            tag: true
+        };
+
+        const to = {
+            color: (type) => {
+                const mapping = new Map([
+                    ['blob', 'blue'],
+                    ['tree', 'green'],
+                    ['commit', 'red'],
+                    ['head', 'grey'],
+                    ['tag', 'grey'],
+                    ['remote', 'grey'],
+                    ['HEAD', 'black']
+                ]);
+
+                return mapping.get(type) || 'pink'
+            },
+
+            label: (x) => objects.includes(x.type) ? x.id.substr(0, 8) : x.id
         }
 
-        toLabel = (x) => objects.includes(x.type) ? x.id.substr(0, 8) : x.id;
-
-        var nodes = new vis.DataSet([]);
+        const nodes = new vis.DataSet([]);
         const nodesView = new vis.DataView(nodes, { filter: (node) => filter[node.type] })
-        var edges = new vis.DataSet([]);
+        const edges = new vis.DataSet([]);
 
         const options = {
             width: "100%",
             height: "100%",
             autoResize: true,
+            layout: {
+                hierarchical: {
+                    sortMethod: 'directed',
+                    shakeTowards: 'roots',
+                    direction: 'RL',
+                    blockShifting: false,
+                    edgeMinimization: false,
+                    parentCentralization: false
+                }
+            },
             physics: {
-                enabled: true,
-                barnesHut: {
-                    gravitationalConstant: -10000,
-                    centralGravity: 0,
-                    damping: 1,
-                    avoidOverlap: 1,
-                    springLength: 150,
-                },
+
                 maxVelocity: 0.5,
-                minVelocity: 0,
+                minVelocity: 0.2,
                 timestep: 1
             },
             edges: {
-                smooth: {
-                    enabled: false,
-                    type: 'continuous'
-                },
                 color: "#000000",
                 width: 0.5,
                 arrows: {
@@ -182,15 +202,6 @@
                     color: "white"
                 }
             }
-        };
-
-        const filter = {
-            commit: true,
-            tree: true,
-            blob: true,
-            head: true,
-            HEAD: true,
-            tag: true
         };
 
         const container = document.getElementById('mynetwork')
@@ -211,12 +222,12 @@
             return;
         });
 
-        difference = (first, another, compare) => first.filter(a => !another.some(b => compare(a, b)));
-
         function load() {
+            difference = (first, another, compare) => first.filter(a => !another.some(b => compare(a, b)));
+
             fetch('api/graph').then(response => response.json()).then(json => {
                 nodes.remove(difference(nodes.get(), json.nodes, (a, b) => a.id === b.id));
-                nodes.add(difference(json.nodes, nodes.get(), (a, b) => a.id === b.id).map(x => ({ id: x.id, label: this.toLabel(x), title: x.id, color: this.toColor(x.type), type: x.type, title: x.id })));
+                nodes.add(difference(json.nodes, nodes.get(), (a, b) => a.id === b.id).map(x => ({ id: x.id, label: to.label(x), title: x.id, color: to.color(x.type), type: x.type, title: x.id })));
 
                 edges.remove(difference(edges.get(), json.edges, (a, b) => a.from === b.from && a.to === b.to));
                 edges.add(difference(json.edges, edges.get(), (a, b) => a.from === b.from && a.to === b.to));
@@ -236,12 +247,19 @@
         load();
         setInterval(load, 3000);
 
-        document.getElementsByName("type").forEach((type) =>
-            type.addEventListener("change", (e) => {
+        document.getElementsByName("filter").forEach((x) =>
+            x.addEventListener("change", (e) => {
                 const { value, checked } = e.target;
                 filter[value] = checked;
                 nodesView.refresh();
             }))
+
+        document.getElementById("hierarchy").addEventListener("change", (e) => {
+            const { checked } = e.target;
+            options.layout.hierarchical.enabled = checked;
+            network.setOptions(options);
+        });
+
     </script>
 </body>
 
