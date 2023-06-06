@@ -39,6 +39,13 @@
             left: 2em;
             top: 2em;
         }
+
+        #filter {
+            position: fixed;
+            left: 2em;
+            top: 4em;
+            font-family: Arial, Helvetica, sans-serif;
+        }
     </style>
 </head>
 
@@ -93,7 +100,26 @@
         <button id="physics" onclick="stop()">STOP</button>
         <button id="ffwd" onclick="ffwd()">FFWD</button>
     </div>
-
+    <div id="filter">
+        <div>
+            <label>
+                <input type="checkbox" name="type" value="commit" checked />
+                <span style="color: red">commit</span>
+            </label>
+        </div>
+        <div>
+            <label>
+                <input type="checkbox" name="type" value="tree" checked />
+                <span style="color: green">tree</span>
+            </label>
+        </div>
+        <div>
+            <label>
+                <input type="checkbox" name="type" value="blob" checked />
+                <span style="color: blue">blob</span>
+            </label>
+        </div>
+    </div>
     <script type="text/javascript">
         fetch('api/info').then(response => response.json()).then(data => document.title = data.directory)
 
@@ -117,6 +143,7 @@
         toLabel = (x) => objects.includes(x.type) ? x.id.substr(0, 8) : x.id;
 
         var nodes = new vis.DataSet([]);
+        const nodesView = new vis.DataView(nodes, { filter: (node) => filter[node.type] })
         var edges = new vis.DataSet([]);
 
         const options = {
@@ -157,9 +184,19 @@
             }
         };
 
+        const filter = {
+            commit: true,
+            tree: true,
+            blob: true,
+            head: true,
+            HEAD: true,
+            tag: true
+        };
+
         const container = document.getElementById('mynetwork')
         const data = document.getElementById('data');
-        const network = new vis.Network(container, { nodes, edges }, options);
+
+        const network = new vis.Network(container, { nodes: nodesView, edges }, options);
         network.on('click', (params) => {
             if (params.nodes[0]) {
                 node = nodes.get(params.nodes[0]);
@@ -198,6 +235,13 @@
 
         load();
         setInterval(load, 3000);
+
+        document.getElementsByName("type").forEach((type) =>
+            type.addEventListener("change", (e) => {
+                const { value, checked } = e.target;
+                filter[value] = checked;
+                nodesView.refresh();
+            }))
     </script>
 </body>
 
