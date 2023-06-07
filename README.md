@@ -2,20 +2,21 @@
 
 ![test](https://github.com/riezebosch/gitviz/workflows/test/badge.svg)
 
-For education purposes: visualize the git repository in real-time revealing the blobs, trees and commits that make up the [git data structure](https://eagain.net/articles/git-for-computer-scientists/).
+`gitviz` is a tool designed for educational purposes to visualize the Git repository in real time, providing a graphical representation of the blobs, trees, and commits that make up the [git data structure](https://eagain.net/articles/git-for-computer-scientists/).
 
-![graph](img/graph.png)
+[![graph](img/graph.png)https://riezebosch.github.io/gitviz/](https://riezebosch.github.io/gitviz/)
 
-color | type
-------|-------
-red   | commit
-green | tree
-blue  | blob
-grey  | ref (branch, tag or HEAD)
+### Key Features
 
-## install
+- Real-time visualization of Git repository
+- Graphical representation of blobs, trees, commits, and references (branches, tags, or HEAD)
+- An educational tool for understanding Git's data structure
 
-Download from [releases](../../releases) and start from the root of your repo.
+### Installation
+
+You can install `gitviz` by following these steps:
+
+1. Open a terminal and navigate to the root of your repository.
 
 ```sh
 case $(uname -m) in
@@ -30,24 +31,36 @@ chmod +x gitviz
 sudo mv gitviz /usr/local/bin/gitviz
 ```
 
-or run: 
+Alternatively, you can run the following command to install `gitviz` directly:
 
 ```sh
-wget -O - https://riezebosch.github.io/gitviz/install.sh | sh
+curl -sSL https://riezebosch.github.io/gitviz/install.sh | sh
 ```
 
-run from the root of your repository:
+### Usage
+
+To use `gitviz`, navigate to the root of your repository in a terminal and run the following command:
 
 ```sh
 gitviz
 ```
 
-or 
+and use `CTRL+C` to stop it when done.
+
+You can also run `gitviz` in the background by appending an ampersand (`&`) to the command:
 
 ```sh
 gitviz &
-...
+```
+
+To stop the process when running in the background, you can use the `kill` command with the appropriate job number. For example, if the job number is `1`, you can use the following command:
+
+```sh
 kill %1
 ```
 
-to push the process to the background and stop it when finished.
+By using `gitviz`, you will gain valuable insights into the structure of your Git repository in real time, with different colors representing commits, trees, blobs, and references.
+
+---
+
+This [README.md](./README.md) was peer-reviewed by [ChatGPT](https://chat.openai.com/).
