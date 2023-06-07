@@ -17,7 +17,7 @@
 
         #mynetwork {
             height: 100%;
-            width: 70%;
+            width: 100%;
         }
 
         #data {
@@ -44,6 +44,20 @@
         #filter {
             list-style-type: none;
             padding: 0;
+        }
+
+        @media screen and (max-width: 600px) {
+            #data {
+                display: none;
+            }
+
+            #buttons {
+                display: none;
+            }
+
+            .github-corner {
+                display: none;
+            }
         }
     </style>
 </head>
@@ -260,6 +274,13 @@
             network.setOptions(options);
         });
 
+        const { interactionHandler } = network;
+        if (interactionHandler) {
+            interactionHandler.body.eventListeners.onMouseWheel = (event) => {
+                if (!event.ctrlKey) return; // ctrlKey detects a mac touchpad pinch in onwheel event
+                interactionHandler.onMouseWheel(event);
+            };
+        }
     </script>
 </body>
 
