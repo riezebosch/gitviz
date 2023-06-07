@@ -274,6 +274,13 @@
             network.setOptions(options);
         });
 
+        const { interactionHandler } = network;
+        if (interactionHandler) {
+            interactionHandler.body.eventListeners.onMouseWheel = (event) => {
+                if (!event.ctrlKey) return; // ctrlKey detects a mac touchpad pinch in onwheel event
+                interactionHandler.onMouseWheel(event);
+            };
+        }
     </script>
 </body>
 
