@@ -17,7 +17,7 @@
 
         #mynetwork {
             height: 100%;
-            width: 100%;
+            width: 70%;
         }
 
         #data {
@@ -47,6 +47,10 @@
         }
 
         @media screen and (max-width: 600px) {
+            #mynetwork {
+                width: 100%;
+            }
+
             #data {
                 display: none;
             }
@@ -143,11 +147,12 @@
     </div>
 
     <script type="text/javascript">
-        fetch('api/info').then(response => response.json()).then(data => document.title = data.directory)
+        fetch('api/info')
+            .then(response => response.json())
+            .then(data => document.title = data.directory)
 
         const objects = ["blob", "tree", "commit"];
         const refs = ["head", "remote", "tag"];
-
 
         const filter = {
             commit: true,
@@ -236,10 +241,9 @@
             return;
         });
 
-        function load() {
+        load = async () => {
             difference = (first, another, compare) => first.filter(a => !another.some(b => compare(a, b)));
-
-            fetch('api/graph').then(response => response.json()).then(json => {
+            await fetch('api/graph').then(response => response.json()).then(json => {
                 nodes.remove(difference(nodes.get(), json.nodes, (a, b) => a.id === b.id));
                 nodes.add(difference(json.nodes, nodes.get(), (a, b) => a.id === b.id).map(x => ({ id: x.id, label: to.label(x), title: x.id, color: to.color(x.type), type: x.type, title: x.id })));
 
@@ -248,17 +252,14 @@
             });
         }
 
-        function stop() {
-            network.physics.stopSimulation();
-        }
-
+        stop = () => network.physics.stopSimulation();
         ffwd = () => {
             network.physics.stopSimulation();
             network.physics.stabilize(500);
             network.physics.startSimulation();
         }
 
-        load();
+        load().then(() => network.fit());
         setInterval(load, 3000);
 
         document.getElementsByName("filter").forEach((x) =>
