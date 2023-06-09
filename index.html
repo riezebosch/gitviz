@@ -203,10 +203,8 @@
             interaction: {
                 zoomSpeed: 0.3,
                 navigationButtons: true,
-
             },
             physics: {
-
                 maxVelocity: 0.5,
                 minVelocity: 0.2,
                 timestep: 1
@@ -248,9 +246,20 @@
 
         load = async () => {
             difference = (first, another, compare) => first.filter(a => !another.some(b => compare(a, b)));
+            const order = {
+                HEAD: 1,
+                head: 1,
+                tag: 1,
+                remote: 2,
+                commit: 3,
+                tree: 4,
+                blob: 5
+            }
             await fetch('api/graph').then(response => response.json()).then(json => {
                 nodes.remove(difference(nodes.get(), json.nodes, (a, b) => a.id === b.id));
-                nodes.add(difference(json.nodes, nodes.get(), (a, b) => a.id === b.id).map(x => ({ id: x.id, label: to.label(x), title: x.id, color: to.color(x.type), type: x.type, title: x.id })));
+                nodes.add(difference(json.nodes, nodes.get(), (a, b) => a.id === b.id)
+                    .sort((a, b) => order[a.type] - order[b.type])
+                    .map(x => ({ id: x.id, label: to.label(x), title: x.id, color: to.color(x.type), type: x.type })));
 
                 edges.remove(difference(edges.get(), json.edges, (a, b) => a.from === b.from && a.to === b.to));
                 edges.add(difference(json.edges, edges.get(), (a, b) => a.from === b.from && a.to === b.to));
