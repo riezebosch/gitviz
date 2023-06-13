@@ -19,6 +19,6 @@
   </metadata>
   <files>
     <file src="tools\**" target="tools" />
-    <file src="..\dist\windows\amd64\**" target="tools" />
+    <file src="..\dist\gitviz_windows_amd64.exe" target="tools/gitviz.exe" />
   </files>
 </package>

@@ -1,0 +1,29 @@
+on:
+  release:
+    types: [published]
+
+name: choco
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - name: download
+      run: |
+        ${{ github.event.release }} | jq '.assets[] | select(.name=="gitviz_windows_amd64.exe").browser_download_url' | xargs curl -O --output-dir dist
+    - name: hash
+      run: | 
+        shasum -a 256 dist/gitviz_windows_amd64.exe | head -c 40 >> ./choco/tools/LICENSE.txt
+
+    - id: version
+      run: echo "::set-output name=version::$($env:GITHUB_REF.Substring(11))"
+
+    - name: choco pack
+      uses: crazy-max/ghaction-chocolatey@v1
+      with:
+        args: pack ./choco/gitviz.nuspec --version ${{ steps.version.outputs.version }}
+
+    - name: choco push
+      uses: crazy-max/ghaction-chocolatey@v1
+      with:
+        args: push --api-key=${{ secrets.CHOCOLATEY_APIKEY }}
+
