@@ -8,8 +8,7 @@ jobs:
         platform: [ubuntu-latest, macos-latest, windows-latest]
     runs-on: ${{ matrix.platform }}
     steps:
-      - name: install
-        uses: actions/setup-go@v1
+      - uses: actions/setup-go@v4
         with:
           go-version: ${{ matrix.go-version }}
       - uses: actions/checkout@v3

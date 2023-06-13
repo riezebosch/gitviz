@@ -1,78 +1,24 @@
+name: release
 on:
   push:
     tags:
       - v*
 
-name: release
 jobs:
   deploy:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
+      - uses: actions/setup-go@v4
+        with:
+          go-version: 1.20.x
 
-    - name: install go
-      uses: actions/setup-go@v1
+      - name: build
+        run: |
+          go install github.com/mitchellh/gox@latest
+          gox -output "dist/{{.Dir}}_{{.OS}}_{{.Arch}}" -os "linux windows darwin" -arch "arm64 amd64 aarch64"
 
-    - name: get tools
-      run: |
-        go get -u github.com/go-bindata/go-bindata/...
-        go get -u github.com/mitchellh/gox/...
-
-    - name: get deps
-      run: go get -v -t -d ./...
-
-    - name: build
-      run: |
-        $env:PATH = "$env:PATH;$(go env GOPATH)\bin" # https://github.com/actions/setup-go/issues/14
-        go-bindata html
-        gox -output "dist/{{.OS}}/{{.Arch}}/{{.Dir}}"
-
-    - name: hash
-      run: | 
-        (Get-FileHash -Path ./dist/windows/amd64/gitviz.exe -Algorithm SHA256).Hash >> ./choco/tools/LICENSE.txt
-
-    - name: release
-      id: create_release
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: ${{ github.ref }}
-        release_name: Release ${{ github.ref }}
-        body: ""
-        draft: false
-        prerelease: false
-
-    - name: Windows x64 asset
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./dist/windows/amd64/gitviz.exe
-        asset_name: gitviz.exe
-        asset_content_type: application/exe
-
-    - name: Darwin amd64 asset
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./dist//darwin/amd64/gitviz
-        asset_name: gitviz
-        asset_content_type: application/exe
-
-    - id: version
-      run: echo "::set-output name=version::$($env:GITHUB_REF.Substring(11))"
-
-    - name: choco pack
-      uses: crazy-max/ghaction-chocolatey@v1
-      with:
-        args: pack ./choco/gitviz.nuspec --version ${{ steps.version.outputs.version }}
-
-    - name: choco push
-      uses: crazy-max/ghaction-chocolatey@v1
-      with:
-        args: push --api-key=${{ secrets.CHOCOLATEY_APIKEY }}
-
+      - name: release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: ./dist/*
