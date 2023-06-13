@@ -13,6 +13,7 @@ import (
 	"github.com/go-chi/chi"
 	"github.com/go-chi/cors"
 	"github.com/go-chi/render"
+	"github.com/gobuffalo/packr/v2"
 )
 
 // Routes for graph and content
@@ -25,12 +26,14 @@ func Routes(wd string) *chi.Mux {
 	r.Use(cors.Handler)
 
 	r.Route("/", func(r chi.Router) {
+		box := packr.New("html", "./html")
+
 		r.Get("/", func(w http.ResponseWriter, r *http.Request) {
-			output, _ := Asset("html/index.html")
-			w.Write(output)
+			html, _ := box.Find("index.html")
+			w.Write(html)
 		})
 		r.Get("/*", func(w http.ResponseWriter, r *http.Request) {
-			output, _ := Asset("html" + r.URL.EscapedPath())
+			output, _ := box.Find(r.URL.EscapedPath())
 			w.Write(output)
 		})
 	})
