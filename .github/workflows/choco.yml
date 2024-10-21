@@ -1,21 +1,26 @@
 on:
-  release:
-    types: [published]
+  workflow_run:
+    workflows: [release]
+    types:
+      - completed
 
 name: choco
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     steps:
-    - name: download
-      run: |
-        ${{ github.event.release }} | jq '.assets[] | select(.name=="gitviz_windows_amd64.exe").browser_download_url' | xargs curl -O --output-dir dist
+    - uses: dawidd6/action-download-artifact@v2
+      with:
+        name: dist
+        path: distecho
+        run_id: ${{ github.event.workflow_run.id }}
     - name: hash
       run: | 
         shasum -a 256 dist/gitviz_windows_amd64.exe | head -c 40 >> ./choco/tools/LICENSE.txt
 
     - id: version
-      run: echo "::set-output name=version::$($env:GITHUB_REF.Substring(11))"
+      run: echo "::set-output name=version::$(echo ${{ github.event.workflow_run.ref_name }} | cut -c -2)"
 
     - name: choco pack
       uses: crazy-max/ghaction-chocolatey@v1
