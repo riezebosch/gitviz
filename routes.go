@@ -3,7 +3,7 @@ package main
 import (
 	"encoding/hex"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -13,8 +13,15 @@ import (
 	"github.com/go-chi/chi"
 	"github.com/go-chi/cors"
 	"github.com/go-chi/render"
-	"github.com/gobuffalo/packr/v2"
+
+	_ "embed"
 )
+
+//go:embed html/index.html
+var index []byte
+
+//go:embed html/favicon.ico
+var favicon []byte
 
 // Routes for graph and content
 func Routes(wd string) *chi.Mux {
@@ -26,15 +33,11 @@ func Routes(wd string) *chi.Mux {
 	r.Use(cors.Handler)
 
 	r.Route("/", func(r chi.Router) {
-		box := packr.New("html", "./html")
-
 		r.Get("/", func(w http.ResponseWriter, r *http.Request) {
-			html, _ := box.Find("index.html")
-			w.Write(html)
+			w.Write(index)
 		})
-		r.Get("/*", func(w http.ResponseWriter, r *http.Request) {
-			output, _ := box.Find(r.URL.EscapedPath())
-			w.Write(output)
+		r.Get("/favicon.ico", func(w http.ResponseWriter, r *http.Request) {
+			w.Write(favicon)
 		})
 	})
 
@@ -105,7 +108,7 @@ func blob(w http.ResponseWriter, r *http.Request, path string) {
 		return
 	}
 
-	content, err := ioutil.ReadAll(o.Contents)
+	content, err := io.ReadAll(o.Contents)
 	if err != nil {
 		return
 	}
