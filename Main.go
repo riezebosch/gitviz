@@ -13,7 +13,7 @@ import (
 func main() {
 	port := flag.Int("port", 0, "")
 	flag.Usage = func() {
-		fmt.Println(fmt.Sprintf("%s [flags] [repository]", os.Args[0]))
+		fmt.Println(os.Args[0], "[flags] [repository]")
 		fmt.Println()
 		fmt.Println("flags:")
 		flag.PrintDefaults()
