@@ -117,7 +117,7 @@ func blob(w http.ResponseWriter, r *http.Request, path string) {
 }
 
 func tree(w http.ResponseWriter, r *http.Request, path string) {
-	repo, _ := gitobj.FromFilesystem(".git/objects", "")
+	repo, _ := gitobj.FromFilesystem(filepath.Join(path, "objects"), "")
 	defer repo.Close()
 
 	id, err := hex.DecodeString(chi.URLParam(r, "id"))
@@ -159,7 +159,7 @@ func get(f func(http.ResponseWriter, *http.Request, string), path string) func(h
 }
 
 func repo(wd string) string {
-	if strings.HasSuffix(wd, ".git") != true {
+	if !strings.HasSuffix(wd, ".git") {
 		return filepath.Join(wd, ".git")
 	}
 

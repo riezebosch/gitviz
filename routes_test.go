@@ -61,7 +61,7 @@ func TestFavicon(t *testing.T) {
 	assert.NotContains(t, request(t, "test-repo.git", "/favicon.ico"), "404")
 }
 func TestObjectTree(t *testing.T) {
-	assert.Contains(t, request(t, "test-repo.git", "/api/objects/tree/4e84516b47b89c12f2f9bf41f34725ef6ddce099"), "Main.go")
+	assert.Contains(t, request(t, "test-repo.git", "/api/objects/tree/09184c94ef2a8398af0121ab186bedead1d876d2"), "index.html")
 }
 
 func request(t *testing.T, repo string, path string) string {
