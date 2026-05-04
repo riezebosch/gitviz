@@ -1,7 +1,5 @@
 # gitviz
 
-![test](https://github.com/riezebosch/gitviz/workflows/test/badge.svg)
-
 `gitviz` is an educational tool that visualizes a Git repository in real time. It renders a live graph of the [objects and references](https://eagain.net/articles/git-for-computer-scientists/) that make up Git's internal data structure — blobs, trees, commits, branches, tags, and HEAD.
 
 [![Live demo](img/graph.png)](https://riezebosch.github.io/gitviz/)
