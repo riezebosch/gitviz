@@ -1,79 +1,50 @@
-## gitviz
+# gitviz
 
 ![test](https://github.com/riezebosch/gitviz/workflows/test/badge.svg)
 
-`gitviz` is a tool designed for educational purposes to visualize the Git repository in real time, providing a graphical representation of the blobs, trees, and commits that make up the [git data structure](https://eagain.net/articles/git-for-computer-scientists/).
+`gitviz` is an educational tool that visualizes a Git repository in real time. It renders a live graph of the [objects and references](https://eagain.net/articles/git-for-computer-scientists/) that make up Git's internal data structure — blobs, trees, commits, branches, tags, and HEAD.
 
-[![graph](img/graph.png)https://riezebosch.github.io/gitviz/](https://riezebosch.github.io/gitviz/)
+[![Live demo](img/graph.png)](https://riezebosch.github.io/gitviz/)
 
 ### Key Features
 
-- Real-time visualization of Git repository
-- Graphical representation of blobs, trees, commits, and references (branches, tags, or HEAD)
-- An educational tool for understanding Git's data structure
+- Real-time graph that updates as you run Git commands
+- Shows all four object types: blobs, trees, commits, and references (branches, tags, HEAD)
+- Color-coded by type for quick visual distinction
+- Designed for learning — no configuration needed
 
 ### Installation
 
-You can install `gitviz` by following these steps:
+Download the latest binary from [releases](https://github.com/riezebosch/gitviz/releases/latest) and unzip it.
 
-1. Open a terminal and navigate to the root of your repository.
+**macOS only:** the first time you run it, you need to remove the quarantine flag:
 
-```sh
-#!/bin/bash
-
-set -e
-
-os=$(uname)
-arch=$(uname -m)
-
-case $arch in
-    aarch64|arm64)
-        arch="arm64" 
-        ;;
-    x86_64|amd64)
-        arch="amd64"
-        ;;
-    *)
-        echo "$arch not supported by this script"
-        exit 1
-        ;;
-esac
-
-curl -L -o gitviz "https://github.com/riezebosch/gitviz/releases/latest/download/gitviz_${os}_${arch}"
-chmod +x gitviz
-sudo mv gitviz /usr/local/bin/gitviz
-```
-
-Alternatively, you can run the following command to install `gitviz` directly:
-
-```sh
-curl -sSL https://riezebosch.github.io/gitviz/install.sh | sh
+```shell
+xattr -d com.apple.quarantine ~/Downloads/gitviz
 ```
 
 ### Usage
 
-To use `gitviz`, navigate to the root of your repository in a terminal and run the following command:
+Navigate to the root of a Git repository and run:
 
 ```sh
-gitviz
+~/Downloads/gitviz
 ```
 
-and use `CTRL+C` to stop it when done.
+The graph will open automatically in your browser. Use `CTRL+C` to stop.
 
-You can also run `gitviz` in the background by appending an ampersand (`&`) to the command:
+> **Note:** if `gitviz` is not on your `PATH`, invoke it directly — e.g. `~/Downloads/gitviz`. This works in bash, zsh, and PowerShell.
+
+> **Tip:** run `git init` first if you are starting from an empty directory.
+
+#### Running in the background
 
 ```sh
 gitviz &
 ```
 
-To stop the process when running in the background, you can use the `kill` command with the appropriate job number. For example, if the job number is `1`, you can use the following command:
+To stop it later:
 
 ```sh
 kill %1
 ```
-
-By using `gitviz`, you will gain valuable insights into the structure of your Git repository in real time, with different colors representing commits, trees, blobs, and references.
-
----
-
-This [README.md](./README.md) was peer-reviewed by [ChatGPT](https://chat.openai.com/).
